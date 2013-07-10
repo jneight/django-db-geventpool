@@ -1,4 +1,5 @@
-# this file is a copy of:
+# this file is a modified copy of to be compatible with django, also checks if 
+DB connection is closed and reopen it:
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
 import sys
 import contextlib
