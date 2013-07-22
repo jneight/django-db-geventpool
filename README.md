@@ -10,13 +10,13 @@ Another DB pool using gevent.
 Settings
 ---------
 
-  * Set 'ENGINE' in your database settings to: <i>'django_db_geventpoool.backends.postgresql_psycopg2'</i>
+  * Set 'ENGINE' in your database settings to: <i>'django_db_geventpool.backends.postgresql_psycopg2'</i>
   * Add 'MAX_CONNS' to 'OPTIONS' to set the maximun number of connections allowed to database (default=4)
   
 ```python
 DATABASES = {
     'default': {
-        'ENGINE': 'django_db_geventpoool.backends.postgresql_psycopg2',
+        'ENGINE': 'django_db_geventpool.backends.postgresql_psycopg2',
         'NAME': 'db',           # Or path to database file if using sqlite3.
         'USER': 'postgres',                      # Not used with sqlite3.
         'PASSWORD': 'postgres',                  # Not used with sqlite3.
