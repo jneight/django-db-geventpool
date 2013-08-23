@@ -10,13 +10,20 @@ import sys
 import psycopg2.extensions
 from gevent.coros import Semaphore
 
-from django.db.backends.postgresql_psycopg2.base import CursorWrapper, \
+from django import get_version
+django_version = get_version()
+
+if django_version.startswith('1.5'):
+    from django.db.backends.postgresql_psycopg2.base import CursorWrapper
+
+from django.db.backends.postgresql_psycopg2.base import \
     DatabaseWrapper as OriginalDatabaseWrapper
+
 from django.db.backends.signals import connection_created
 from django.conf import settings
 from django.db.backends.postgresql_psycopg2.base import utc_tzinfo_factory
 from django.utils.encoding import force_str
-from django import get_version
+
 
 import psycopg2_pool as psypool
 
@@ -70,7 +77,8 @@ class DatabaseWrapper15(OriginalDatabaseWrapper):
     def _cursor(self):
         if self.connection is None:
             self.connection = self.pool.get()
-            tz = 'UTC' if settings.USE_TZ else self.settings_dict.get('TIME_ZONE')
+            tz = 'UTC' if settings.USE_TZ else \
+                self.settings_dict.get('TIME_ZONE')
             if tz:
                 try:
                     get_parameter_status = self.connection.get_parameter_status
@@ -134,6 +142,14 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
             self.pool = connection_pools[self.alias]
         connection_pools_lock.release()
 
+    def get_connection_params(self):
+
+        conn_params = super(DatabaseWrapper16, self).get_connection_params()
+        settings_dict = self.settings_dict
+        if 'MAX_CONNS' in settings_dict['OPTIONS']:
+            conn_params['MAX_CONNS'] = settings_dict['OPTIONS']['MAX_CONNS']
+        return conn_params
+
     def get_new_connection(self, conn_params):
         if self.connection is None:
             self.connection = self.pool.get()
@@ -145,6 +161,8 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
             return  # no need to close anything
         try:
             if self.connection.closed:
+                logger.warning(
+                    'psycopg2 connections will be reset.')
                 self.pool.closeall()
                 self.connection = None
             else:
@@ -168,7 +186,6 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
             pool.closeall()
 
 
-django_version = get_version()
 if django_version.startswith('1.5'):
     class DatabaseWrapper(DatabaseWrapper15):
         pass
