@@ -3,7 +3,7 @@ django-db-geventpool
 
 Another DB pool using gevent.
 
-### Need Django 1.5.x
+### Need Django 1.5.x or Django 1.6.x
 
 
 
@@ -12,7 +12,7 @@ Settings
 
   * Set 'ENGINE' in your database settings to: <i>'django_db_geventpool.backends.postgresql_psycopg2'</i>
   * Add 'MAX_CONNS' to 'OPTIONS' to set the maximun number of connections allowed to database (default=4)
-  
+
 ```python
 DATABASES = {
     'default': {

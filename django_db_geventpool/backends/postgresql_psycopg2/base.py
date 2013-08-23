@@ -70,7 +70,7 @@ class DatabaseWrapper15(OriginalDatabaseWrapper):
             conn_params['host'] = settings_dict['HOST']
         if settings_dict['PORT']:
             conn_params['port'] = settings_dict['PORT']
-        if settings_dict['OPTIONS']['MAX_CONNS']:
+        if 'MAX_CONNS' in settings_dict['OPTIONS']:
             conn_params['MAX_CONNS'] = settings_dict['OPTIONS']['MAX_CONNS']
         return conn_params
 
