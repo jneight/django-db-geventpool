@@ -17,6 +17,8 @@ if django_version.startswith('1.5'):
 
 from django.db.backends.postgresql_psycopg2.base import \
     DatabaseWrapper as OriginalDatabaseWrapper
+from django.db.backends.postgresql_psycopg2.creation import \
+    DatabaseCreation as OriginalDatabaseCreation
 from django.db.backends.signals import connection_created
 from django.conf import settings
 
@@ -69,22 +71,24 @@ class DatabaseWrapper15(OriginalDatabaseWrapper):
 
     def _cursor(self):
         if self.connection is None:
-            self.connection = self.pool.get()
-            tz = 'UTC' if settings.USE_TZ else \
-                self.settings_dict.get('TIME_ZONE')
-            if tz:
-                try:
-                    get_parameter_status = self.connection.get_parameter_status
-                except AttributeError:
-                    # psycopg2 > 2.0.12 doesn't support get_parameter_status
-                    conn_tz = None
-                else:
-                    conn_tz = get_parameter_status('TimeZone')
-                if conn_tz != tz:
-                    self.connection.set_isolation_level(
-                        psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-                    self.connection.cursor().execute(
-                        self.ops.set_time_zone_sql(), [tz])
+            self.connection, new = self.pool.get()
+            if new:
+                self.connection.set_client_encoding('UTF8')
+                tz = 'UTC' if settings.USE_TZ else \
+                    self.settings_dict.get('TIME_ZONE')
+                if tz:
+                    try:
+                        get_parameter_status = self.connection.get_parameter_status
+                    except AttributeError:
+                        # psycopg2 > 2.0.12 doesn't support get_parameter_status
+                        conn_tz = None
+                    else:
+                        conn_tz = get_parameter_status('TimeZone')
+                    if conn_tz != tz:
+                        self.connection.set_isolation_level(
+                            psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+                        self.connection.cursor().execute(
+                            self.ops.set_time_zone_sql(), [tz])
             self.connection.set_isolation_level(self.isolation_level)
             self._get_pg_version()
             connection_created.send(sender=self.__class__, connection=self)

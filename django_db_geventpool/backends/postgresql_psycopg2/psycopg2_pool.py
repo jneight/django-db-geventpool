@@ -23,7 +23,7 @@ class DatabaseConnectionPool(object):
 
     def get(self):
         pool = self.pool
-        if self.size >= self.maxsize:
+        if self.size >= self.maxsize or not self.pool.empty():
             new_connection = pool.get()
             try:
                 # check connection is still valid
@@ -35,17 +35,20 @@ class DatabaseConnectionPool(object):
                 except:
                     pass
                 new_connection = self.create_connection()
+                is_new = True
             else:
                 if not new_connection.autocommit:
                     new_connection.rollback()
+                is_new = False
         else:
             self.size += 1
             try:
                 new_connection = self.create_connection()
+                is_new = True
             except:
                 self.size -= 1
                 raise
-        return new_connection
+        return new_connection, is_new
 
     def put(self, connection):
         if connection.closed:
@@ -53,9 +56,9 @@ class DatabaseConnectionPool(object):
                 'psycopg2 connections will be reset.')
             self.pool.closeall()
         else:
-            logger.debug('deleting, available %s', self.pool.qsize())
-            self.pool.put_nowait(connection)
-            logger.debug('after, available %s', self.pool.qsize())
+            logger.debug('Closing connection, available %s', self.pool.qsize())
+            self.pool.put(connection)
+            logger.debug('Closed connection, available %s', self.pool.qsize())
 
     def closeall(self):
         while not self.pool.empty():
@@ -76,7 +79,6 @@ class PostgresConnection(object):
         return getattr(self._connection, attr)
 
     def close(self, *args, **kwargs):
-        print 'closed'
         self._pool.put(self._connection)
 
 
