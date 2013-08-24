@@ -1,8 +1,4 @@
-"""
-Based on
-https://github.com/gmcguire/django-db-pool and
-https://github.com/cinghiale/django-db-pool
-"""
+# coding=utf-8
 
 import logging
 import sys

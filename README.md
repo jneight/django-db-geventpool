@@ -29,3 +29,9 @@ DATABASES = {
     }
 }
 ```
+
+Other pools
+------------
+
+* [django-db-pool](https://github.com/gmcguire/django-db-pool)
+* [django-postgresql](https://github.com/kennethreitz/django-postgrespool)
