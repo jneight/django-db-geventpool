@@ -2,6 +2,12 @@
 import sys
 from django.conf import settings
 
+import gevent.monkey
+gevent.monkey.patch_all()
+
+import psycogreen.gevent
+psycogreen.gevent.patch_psycopg()
+
 
 settings.configure(
     DEBUG=True,
@@ -11,6 +17,7 @@ settings.configure(
             'NAME': 'test',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
+            'OPTIONS': {'autocommit': True},
         }
     },
     INSTALLED_APPS=(

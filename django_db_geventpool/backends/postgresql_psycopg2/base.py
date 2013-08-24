@@ -8,24 +8,21 @@ import logging
 import sys
 
 import psycopg2.extensions
+import psycopg2_pool as psypool
 from gevent.coros import Semaphore
 
 from django import get_version
 django_version = get_version()
 
 if django_version.startswith('1.5'):
-    from django.db.backends.postgresql_psycopg2.base import CursorWrapper
+    from django.db.backends.postgresql_psycopg2.base import (
+        CursorWrapper, utc_tzinfo_factory)
+    from django.utils.encoding import force_str
 
 from django.db.backends.postgresql_psycopg2.base import \
     DatabaseWrapper as OriginalDatabaseWrapper
-
 from django.db.backends.signals import connection_created
 from django.conf import settings
-from django.db.backends.postgresql_psycopg2.base import utc_tzinfo_factory
-from django.utils.encoding import force_str
-
-
-import psycopg2_pool as psypool
 
 logger = logging.getLogger(__name__)
 
@@ -99,30 +96,6 @@ class DatabaseWrapper15(OriginalDatabaseWrapper):
         cursor.tzinfo_factory = utc_tzinfo_factory if settings.USE_TZ else None
         return CursorWrapper(cursor)
 
-    def close(self):
-        self.validate_thread_sharing()
-        if self.connection is None:
-            return  # no need to close anything
-        try:
-            if self.connection.closed:
-                logger.warning(
-                    'psycopg2 connections will be reset.')
-                self.pool.closeall()
-                self.connection = None
-            else:
-                self.pool.put(self.connection)
-                self.connection = None
-        except:
-            # In some cases (database restart, network connection lost etc...)
-            # the connection to the database is lost without giving Django a
-            # notification. If we don't set self.connection to None, the error
-            # will occur a every request.
-            self.connection = None
-            logger.warning(
-                'psycopg2 error while closing the connection.',
-                exc_info=sys.exc_info())
-            raise
-
     def closeall(self):
         for pool in connection_pools.values():
             pool.closeall()
@@ -143,7 +116,6 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
         connection_pools_lock.release()
 
     def get_connection_params(self):
-
         conn_params = super(DatabaseWrapper16, self).get_connection_params()
         settings_dict = self.settings_dict
         if 'MAX_CONNS' in settings_dict['OPTIONS']:
@@ -151,35 +123,7 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
         return conn_params
 
     def get_new_connection(self, conn_params):
-        if self.connection is None:
-            self.connection = self.pool.get()
-        return self.connection
-
-    def close(self):
-        self.validate_thread_sharing()
-        if self.connection is None:
-            return  # no need to close anything
-        try:
-            if self.connection.closed:
-                logger.warning(
-                    'psycopg2 connections will be reset.')
-                self.pool.closeall()
-                self.connection = None
-            else:
-                self.pool.put(self.connection)
-                self.connection = None
-        except:
-            # In some cases (database restart, network connection lost etc...)
-            # the connection to the database is lost without giving Django a
-            # notification. If we don't set self.connection to None, the error
-            # will occur a every request.
-            self.connection = None
-            logger.warning(
-                'psycopg2 error while closing the connection.',
-                exc_info=sys.exc_info())
-            raise
-        finally:
-            self.set_clean()
+        return self.pool.get()
 
     def closeall(self):
         for pool in connection_pools.values():
