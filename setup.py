@@ -4,14 +4,15 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-db-geventpool',
-    version='0.3',
+    version='0.7',
     install_requires=[
         'gevent>=0.13.8',
         'django>=1.5',
         'psycopg2>=2.5.1',
         'psycogreen==1.0'],
     url='https://github.com/jneight/django-db-geventpool',
-    description='Add a DB connection pool using gevent to django',
+    description='Add ia DB connection pool using gevent to django',
+    long_description=open("README.rst").read(),
     packages=find_packages(),
     include_package_data=True,
     license='Apache 2.0',

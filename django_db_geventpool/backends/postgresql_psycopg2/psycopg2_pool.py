@@ -4,17 +4,16 @@
 # to be compatible with django, also checks if
 # DB connection is closed and reopen it:
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
-
 import logging
 logger = logging.getLogger('django')
 
 from gevent.queue import Queue
 
-from psycopg2 import connect
+from psycopg2 import connect, DatabaseError
 
 
 class DatabaseConnectionPool(object):
-    def __init__(self, maxsize=4):
+    def __init__(self, maxsize=100):
         if not isinstance(maxsize, (int, long)):
             raise TypeError('Expected integer, got %r' % (maxsize, ))
         self.maxsize = maxsize
@@ -23,42 +22,28 @@ class DatabaseConnectionPool(object):
 
     def get(self):
         pool = self.pool
-        if self.size >= self.maxsize or not self.pool.empty():
-            new_connection = pool.get()
+        if self.size >= self.maxsize or pool.qsize():
+            new_item = pool.get()
             try:
                 # check connection is still valid
-                new_connection.cursor().execute('SELECT 1')
-            except:
-                logger.info("DB connection was closed, creating new one")
-                try:
-                    new_connection.close()
-                except:
-                    pass
-                new_connection = self.create_connection()
-                is_new = True
-            else:
-                if not new_connection.autocommit:
-                    new_connection.rollback()
-                is_new = False
+                self.check_usable(new_item)
+                logger.debug("DB connection reused")
+            except DatabaseError:
+                logger.debug("DB connection was closed, creating new one")
+                new_item = self.create_connection()
+            return new_item
         else:
             self.size += 1
             try:
-                new_connection = self.create_connection()
-                is_new = True
+                new_item = self.create_connection()
+                logger.debug("DB connection created")
             except:
                 self.size -= 1
                 raise
-        return new_connection, is_new
+            return new_item
 
-    def put(self, connection):
-        if connection.closed:
-            logger.warning(
-                'psycopg2 connections will be reset.')
-            self.pool.closeall()
-        else:
-            logger.debug('Closing connection, available %s', self.pool.qsize())
-            self.pool.put(connection)
-            logger.debug('Closed connection, available %s', self.pool.qsize())
+    def put(self, item):
+        self.pool.put(item, timeout=2)
 
     def closeall(self):
         while not self.pool.empty():
@@ -70,20 +55,10 @@ class DatabaseConnectionPool(object):
         self.size = 0
 
 
-class PostgresConnection(object):
-    def __init__(self, pool, connection):
-        self._pool = pool
-        self._connection = connection
-
-    def __getattr__(self, attr):
-        return getattr(self._connection, attr)
-
-    def close(self, *args, **kwargs):
-        self._pool.put(self._connection)
-
-
 class PostgresConnectionPool(DatabaseConnectionPool):
     def __init__(self, *args, **kwargs):
+        self.connect = kwargs.pop('connect', connect)
+        self.connection = None
         maxsize = kwargs.pop('MAX_CONNS', 4)
         self.args = args
         self.kwargs = kwargs
@@ -91,5 +66,11 @@ class PostgresConnectionPool(DatabaseConnectionPool):
             self, maxsize)
 
     def create_connection(self):
-        conn = connect(*self.args, **self.kwargs)
-        return PostgresConnection(self, conn)
+        conn = self.connect(*self.args, **self.kwargs)
+        # set correct encoding
+        conn.set_client_encoding('UTF8')
+        return conn
+
+    def check_usable(self, connection):
+        connection.cursor().execute('SELECT 1')
+
