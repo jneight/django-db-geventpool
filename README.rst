@@ -1,6 +1,9 @@
 django-db-geventpool
 ====================
 
+.. image:: https://travis-ci.org/jneight/django-db-geventpool.png?branch=master   :target: https://travis-ci.org/jneight/django-db-geventpool
+
+
 Another DB pool using gevent for PostgreSQL DB.
 
 *Need Django 1.5.x or Django 1.6.x*
