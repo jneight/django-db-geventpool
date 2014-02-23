@@ -1,7 +1,8 @@
 django-db-geventpool
 ====================
 
-.. image:: https://travis-ci.org/jneight/django-db-geventpool.png?branch=master   :target: https://travis-ci.org/jneight/django-db-geventpool
+.. image:: https://travis-ci.org/jneight/django-db-geventpool.png?branch=master  
+   :target: https://travis-ci.org/jneight/django-db-geventpool
 
 
 Another DB pool using gevent for PostgreSQL DB.
