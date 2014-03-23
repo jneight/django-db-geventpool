@@ -50,7 +50,6 @@ else:
         ),
         USE_TZ=True,
     )
-    django.setup()
     try:
         django.setup()
     except AttributeError:
