@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 import sys
-import django
-from django.conf import settings
-
 import gevent.monkey
 gevent.monkey.patch_all()
 
 import psycogreen.gevent
 psycogreen.gevent.patch_psycopg()
 
-if django.get_version().startswith('1.5'):
+import django
+from django.conf import settings
+
+
+if django.VERSION < (1,6):
     settings.configure(
         DEBUG=True,
         DATABASES={
@@ -44,14 +45,24 @@ else:
             }
         },
         INSTALLED_APPS=(
-            'django_db_geventpool',
             'tests',
+            'django_db_geventpool',
         ),
         USE_TZ=True,
     )
+    django.setup()
+    try:
+        django.setup()
+    except AttributeError:
+        pass # not using django 1.7
 
-from django.test.simple import DjangoTestSuiteRunner
-test_runner = DjangoTestSuiteRunner(verbosity=1)
+
+try:
+    from django.test.runner import DiscoverRunner as TestSuiteRunner
+except ImportError:  # DiscoverRunner is the preferred one for django > 1.7
+    from django.test.simple import DjangoTestSuiteRunner as TestSuiteRunner
+
+test_runner = TestSuiteRunner(verbosity=1)
 
 failures = test_runner.run_tests(['tests', ])
 if failures:

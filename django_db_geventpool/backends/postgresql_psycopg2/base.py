@@ -11,13 +11,13 @@ try:
 except ImportError:
     pass
 
+import django
 from django.db.backends.postgresql_psycopg2.base import \
     DatabaseWrapper as OriginalDatabaseWrapper
 from django.db.backends.signals import connection_created
 from django.conf import settings
 from django.db.backends.postgresql_psycopg2.base import utc_tzinfo_factory
 from django.utils.encoding import force_str
-from django import get_version
 
 import psycopg2_pool as psypool
 
@@ -174,12 +174,11 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
             pool.closeall()
 
 
-django_version = get_version()
-if django_version.startswith('1.5'):
-    class DatabaseWrapper(DatabaseWrapper15):
-        pass
-elif django_version.startswith('1.6'):
+if django.VERSION >= (1, 6):
     class DatabaseWrapper(DatabaseWrapper16):
         pass
+elif django.VERSION >= (1, 4):
+    class DatabaseWrapper(DatabaseWrapper15):
+        pass
 else:
-    raise ImportError("Django version 1.5.x or 1.6.x needed")
+    raise ImportError("Django version 1.4.x or greater needed")
