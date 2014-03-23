@@ -7,7 +7,7 @@ django-db-geventpool
 
 Another DB pool using gevent for PostgreSQL DB.
 
-*Need Django 1.5.x or Django 1.6.x*
+*Need Django 1.5.x or newer (check settings for django >= 1.6)*
 
 
 Patch psycopg2
