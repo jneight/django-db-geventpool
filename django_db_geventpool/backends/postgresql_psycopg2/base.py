@@ -27,9 +27,9 @@ connection_pools = {}
 connection_pools_lock = Semaphore(value=1)
 
 
-class DatabaseWrapper15(OriginalDatabaseWrapper):
+class DatabaseWrapperMixin15(object):
     def __init__(self, *args, **kwargs):
-        super(DatabaseWrapper15, self).__init__(*args, **kwargs)
+        super(DatabaseWrapperMixin15, self).__init__(*args, **kwargs)
         global connection_pools
         global connection_pools_lock
         connection_pools_lock.acquire()
@@ -121,9 +121,9 @@ class DatabaseWrapper15(OriginalDatabaseWrapper):
             pool.closeall()
 
 
-class DatabaseWrapper16(OriginalDatabaseWrapper):
+class DatabaseWrapperMixin16(object):
     def __init__(self, *args, **kwargs):
-        super(DatabaseWrapper16, self).__init__(*args, **kwargs)
+        super(DatabaseWrapperMixin16, self).__init__(*args, **kwargs)
         global connection_pools
         global connection_pools_lock
         connection_pools_lock.acquire()
@@ -141,7 +141,7 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
         return self.connection
 
     def get_connection_params(self):
-        conn_params = super(DatabaseWrapper16, self).get_connection_params()
+        conn_params = super(DatabaseWrapperMixin16, self).get_connection_params()
         if 'MAX_CONNS' in self.settings_dict['OPTIONS']:
             conn_params['MAX_CONNS'] = self.settings_dict['OPTIONS']['MAX_CONNS']
         return conn_params
@@ -175,10 +175,13 @@ class DatabaseWrapper16(OriginalDatabaseWrapper):
 
 
 if django.VERSION >= (1, 6):
-    class DatabaseWrapper(DatabaseWrapper16):
+    class DatabaseWrapperMixin(DatabaseWrapperMixin16):
         pass
 elif django.VERSION >= (1, 4):
-    class DatabaseWrapper(DatabaseWrapper15):
+    class DatabaseWrapperMixin(DatabaseWrapperMixin15):
         pass
 else:
     raise ImportError("Django version 1.4.x or greater needed")
+
+class DatabaseWrapper(DatabaseWrapperMixin, OriginalDatabaseWrapper):
+    pass
