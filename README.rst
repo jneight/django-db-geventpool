@@ -30,6 +30,7 @@ Settings
 
 
   * Set `ENGINE` in your database settings to: *'django_db_geventpool.backends.postgresql_psycopg2'*
+  * Or for postgis: *'django_db_geventpool.backends.postgis'*
   * Add `MAX_CONNS` to `OPTIONS` to set the maximun number of connections allowed to database (default=4)
   * If using django 1.6 or newer, add `CONN_MAX_AGE: 0` to settings to disable default django persistent connection feature.
 
