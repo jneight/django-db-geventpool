@@ -144,6 +144,8 @@ class DatabaseWrapperMixin16(object):
         return self.connection
 
     def get_connection_params(self):
+        if not hasattr(self, 'pool'):
+            self.settings_dict.get('OPTIONS', {}).pop('MAX_CONNS', None)
         conn_params = super(DatabaseWrapperMixin16, self).get_connection_params()
         if 'MAX_CONNS' in self.settings_dict['OPTIONS']:
             conn_params['MAX_CONNS'] = self.settings_dict['OPTIONS']['MAX_CONNS']
