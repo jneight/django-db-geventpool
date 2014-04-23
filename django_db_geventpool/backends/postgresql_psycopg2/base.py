@@ -136,6 +136,9 @@ class DatabaseWrapperMixin16(object):
         connection_pools_lock.release()
 
     def get_new_connection(self, conn_params):
+        if not hasattr(self, 'pool'):
+            return super(DatabaseWrapperMixin16, self).get_new_connection(conn_params)
+
         if self.connection is None:
             self.connection = self.pool.get()
         return self.connection
@@ -147,6 +150,9 @@ class DatabaseWrapperMixin16(object):
         return conn_params
 
     def close(self):
+        if not hasattr(self, 'pool'):
+            return super(DatabaseWrapperMixin16, self).close()
+
         self.validate_thread_sharing()
         if self.connection is None:
             return  # no need to close anything
