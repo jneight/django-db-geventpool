@@ -29,17 +29,24 @@ connection_pools_lock = Semaphore(value=1)
 
 class DatabaseWrapperMixin15(object):
     def __init__(self, *args, **kwargs):
+        self._pool = None
         super(DatabaseWrapperMixin15, self).__init__(*args, **kwargs)
+
+    @property
+    def pool(self):
+        if self._pool is not None:
+            return self._pool
         global connection_pools
         global connection_pools_lock
         connection_pools_lock.acquire()
         if not self.alias in connection_pools:
-            self.pool = psypool.PostgresConnectionPool(
+            self._pool = psypool.PostgresConnectionPool(
                 **self.get_connection_params())
-            connection_pools[self.alias] = self.pool
+            connection_pools[self.alias] = self._pool
         else:
-            self.pool = connection_pools[self.alias]
+            self._pool = connection_pools[self.alias]
         connection_pools_lock.release()
+        return self._pool
 
     def get_connection_params(self):
         settings_dict = self.settings_dict
@@ -123,17 +130,24 @@ class DatabaseWrapperMixin15(object):
 
 class DatabaseWrapperMixin16(object):
     def __init__(self, *args, **kwargs):
+        self._pool = None
         super(DatabaseWrapperMixin16, self).__init__(*args, **kwargs)
+
+    @property
+    def pool(self):
+        if self._pool is not None:
+            return self._pool
         global connection_pools
         global connection_pools_lock
         connection_pools_lock.acquire()
         if not self.alias in connection_pools:
-            self.pool = psypool.PostgresConnectionPool(
+            self._pool = psypool.PostgresConnectionPool(
                 **self.get_connection_params())
-            connection_pools[self.alias] = self.pool
+            connection_pools[self.alias] = self._pool
         else:
-            self.pool = connection_pools[self.alias]
+            self._pool = connection_pools[self.alias]
         connection_pools_lock.release()
+        return self._pool
 
     def get_new_connection(self, conn_params):
         if self.connection is None:
