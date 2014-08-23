@@ -184,6 +184,7 @@ class DatabaseWrapperMixin16(object):
         else:
             with self.wrap_database_errors:
                 self.pool.put(self.connection)
+        self.connection = None
 
     def closeall(self):
         for pool in connection_pools.values():
@@ -193,8 +194,6 @@ class DatabaseWrapperMixin16(object):
         if self.in_atomic_block:
             self.closed_in_transaction = True
             self.needs_rollback = True
-        else:
-            self.connection = None
 
 
 if django.VERSION >= (1, 6):
