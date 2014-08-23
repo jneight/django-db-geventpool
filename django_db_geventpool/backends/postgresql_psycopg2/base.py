@@ -30,8 +30,8 @@ connection_pools_lock = Semaphore(value=1)
 
 class DatabaseWrapperMixin15(object):
     def __init__(self, *args, **kwargs):
-        self._pool = None
         super(DatabaseWrapperMixin15, self).__init__(*args, **kwargs)
+        self._pool = None
         self.creation = DatabaseCreation(self)
 
     @property
@@ -130,16 +130,14 @@ class DatabaseWrapperMixin15(object):
 
 class DatabaseWrapperMixin16(object):
     def __init__(self, *args, **kwargs):
-        self._pool = None
         super(DatabaseWrapperMixin16, self).__init__(*args, **kwargs)
+        self._pool = None
         self.creation = DatabaseCreation(self)
 
     @property
     def pool(self):
         if self._pool is not None:
             return self._pool
-        global connection_pools
-        global connection_pools_lock
         connection_pools_lock.acquire()
         if not self.alias in connection_pools:
             self._pool = psypool.PostgresConnectionPool(
@@ -161,36 +159,6 @@ class DatabaseWrapperMixin16(object):
             conn_params['MAX_CONNS'] = self.settings_dict['OPTIONS']['MAX_CONNS']
         return conn_params
 
-    def close(self):
-        self.validate_thread_sharing()
-        if self.connection is None:
-            return  # no need to close anything
-        try:
-            if self.connection.closed:
-                self.pool.closeall()
-            else:
-                self.pool.put(self.connection)
-            self.connection = None
-        except:
-            # In some cases (database restart, network connection lost etc...)
-            # the connection to the database is lost without giving Django a
-            # notification. If we don't set self.connection to None, the error
-            # will occur at every request.
-            self.connection = None
-            logger.warning(
-                'psycopg2 error while closing the connection.',
-                exc_info=sys.exc_info())
-            raise
-        finally:
-            self.set_clean()
-
-    def closeall(self):
-        for pool in connection_pools.values():
-            pool.closeall()
-
-
-
-class DatabaseWrapperMixin17(DatabaseWrapperMixin16):
     def close(self):
         self.validate_thread_sharing()
         if self.closed_in_transaction or self.connection is None:
@@ -229,10 +197,7 @@ class DatabaseWrapperMixin17(DatabaseWrapperMixin16):
             self.connection = None
 
 
-if django.VERSION >= (1, 7):
-    class DatabaseWrapperMixin(DatabaseWrapperMixin17):
-        pass
-elif django.VERSION >= (1, 6):
+if django.VERSION >= (1, 6):
     class DatabaseWrapperMixin(DatabaseWrapperMixin16):
         pass
 elif django.VERSION >= (1, 4):
