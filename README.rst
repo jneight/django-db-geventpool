@@ -32,7 +32,7 @@ Settings
   * Set `ENGINE` in your database settings to: *'django_db_geventpool.backends.postgresql_psycopg2'*
   * Or for postgis: *'django_db_geventpool.backends.postgis'*
   * Add `MAX_CONNS` to `OPTIONS` to set the maximun number of connections allowed to database (default=4)
-  * If using django 1.6 or newer, add `CONN_MAX_AGE: 0` to settings to disable default django persistent connection feature.
+  * If using django 1.6 or newer, add `CONN_MAX_AGE: 0` to settings to disable default django persistent connection feature. And read below note if you are manually spawning greenlets 
 
 .. code:: python
 
@@ -69,6 +69,26 @@ Settings
         }
     }
 
+Using Django 1.6+ ORM when not serving requests
+____________
+
+On If you are using django 1.6+ with the celery gevent pool, or have code that manually spawn greenlets it will not be sufficient to set CONN_MAX_AGE to 0.
+Django only checks for long-live connections when finishing a requests - So if you manually spawn a greenlet (or have celery spawning one) it's connections will
+not get cleaned up but live one for the server to timeout. In production this can cause quite some open connections and while developing it can hamper your tests cases.
+
+To solve it make sure that each greenlet either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
+
+.. code:: python
+  from django.core.signals import request_finished
+  def greenlet_worker():
+    ...
+    request_finished.send(sender="greenlet")
+
+or
+  from django.db import close_old_connections
+  def greenlet_worker():
+    ...
+    close_old_connections()
 
 Other pools
 ------------
