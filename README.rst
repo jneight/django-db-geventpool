@@ -79,16 +79,21 @@ not get cleaned up but live one for the server to timeout. In production this ca
 To solve it make sure that each greenlet either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
 
 .. code:: python
-  from django.core.signals import request_finished
-  def greenlet_worker():
-    ...
-    request_finished.send(sender="greenlet")
+
+   from django.core.signals import request_finished
+   def greenlet_worker():
+      ...
+      request_finished.send(sender="greenlet")
 
 or
-  from django.db import close_old_connections
-  def greenlet_worker():
-    ...
-    close_old_connections()
+
+.. code:: python
+
+   from django.db import close_old_connections
+   def greenlet_worker():
+      ...
+      close_old_connections()
+    
 
 Other pools
 ------------
