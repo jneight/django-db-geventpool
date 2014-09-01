@@ -19,12 +19,12 @@ a good place is the `post_fork()` function at the config file
 .. code:: python
 
    from psycogreen.gevent import patch_psycopg
-   
+
    def post_fork(server, worker):
        patch_psycopg()
        worker.log_info("Made Psycopg2 Green")
-       
-       
+
+
 Settings
 ---------
 
@@ -78,6 +78,18 @@ not get cleaned up but live one for the server to timeout. In production this ca
 
 To solve it make sure that each greenlet either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
 
+The decorator method is preferred, but the other alternatives are also valid.
+
+.. code:: python
+
+   from django_db_geventpool.utils import close_connection
+
+   @close_connection
+   def greenlet_worker()
+        ...
+
+or 
+
 .. code:: python
 
    from django.core.signals import request_finished
@@ -93,7 +105,7 @@ or
    def greenlet_worker():
       ...
       close_old_connections()
-    
+
 
 Other pools
 ------------
