@@ -3,18 +3,18 @@
 import gevent
 
 from django.utils.unittest import TestCase
-from django.db import connection
 
 from .models import TestModel
 
+from django_db_geventpool.utils import close_connection
 
+
+@close_connection
 def test_multiple_connections(count):
     print 'Test {0} starts'.format(count)
-    print connection.pool.__dict__
     for x in range(0, 20):
         assert len(TestModel.objects.all()) == 1
     print 'Test {0} ends'.format(count)
-    connection.close()
 
 
 class ModelTest(TestCase):
@@ -30,6 +30,6 @@ class ModelTest(TestCase):
         TestModel.objects.create(data='test')
         greenlets = []
 
-        for x in range(0, 4):
+        for x in range(0, 50):
             greenlets.append(gevent.spawn(test_multiple_connections, x))
         gevent.joinall(greenlets)
