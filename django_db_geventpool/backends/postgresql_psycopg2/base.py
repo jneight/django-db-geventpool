@@ -190,13 +190,18 @@ class DatabaseWrapperMixin16(object):
         for pool in connection_pools.values():
             pool.closeall()
 
+
+class DatabaseWrapperMixin17(object):
     def set_clean(self):
         if self.in_atomic_block:
             self.closed_in_transaction = True
             self.needs_rollback = True
 
 
-if django.VERSION >= (1, 6):
+if django.VERSION >= (1, 7):
+    class DatabaseWrapperMixin(DatabaseWrapperMixin17, DatabaseWrapperMixin16):
+        pass
+elif django.VERSION >= (1, 6):
     class DatabaseWrapperMixin(DatabaseWrapperMixin16):
         pass
 elif django.VERSION >= (1, 4):
@@ -204,6 +209,7 @@ elif django.VERSION >= (1, 4):
         pass
 else:
     raise ImportError("Django version 1.4.x or greater needed")
+
 
 class DatabaseWrapper(DatabaseWrapperMixin, OriginalDatabaseWrapper):
     pass
