@@ -30,8 +30,8 @@ connection_pools_lock = Semaphore(value=1)
 
 class DatabaseWrapperMixin15(object):
     def __init__(self, *args, **kwargs):
-        super(DatabaseWrapperMixin15, self).__init__(*args, **kwargs)
         self._pool = None
+        super(DatabaseWrapperMixin15, self).__init__(*args, **kwargs)
         self.creation = DatabaseCreation(self)
 
     @property
@@ -130,8 +130,8 @@ class DatabaseWrapperMixin15(object):
 
 class DatabaseWrapperMixin16(object):
     def __init__(self, *args, **kwargs):
-        super(DatabaseWrapperMixin16, self).__init__(*args, **kwargs)
         self._pool = None
+        super(DatabaseWrapperMixin16, self).__init__(*args, **kwargs)
         self.creation = DatabaseCreation(self)
 
     @property
