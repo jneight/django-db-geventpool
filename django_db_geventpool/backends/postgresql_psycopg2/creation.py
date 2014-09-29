@@ -16,13 +16,13 @@ class DatabaseCreationMixin16(object):
 
 
 class DatabaseCreationMixin17(object):
-    def _create_test_db(self, verbosity, autoclobber, keepdb=False):
+    def _create_test_db(self, verbosity, autoclobber):
         self.connection.closeall()
-        return super(DatabaseCreationMixin17, self)._create_test_db(verbosity, autoclobber, keepdb)
+        return super(DatabaseCreationMixin17, self)._create_test_db(verbosity, autoclobber)
 
-    def _destroy_test_db(self, test_database_name, verbosity, keepdb=False):
+    def _destroy_test_db(self, test_database_name, verbosity):
         self.connection.closeall()
-        return super(DatabaseCreationMixin17, self)._destroy_test_db(test_database_name, verbosity, keepdb)
+        return super(DatabaseCreationMixin17, self)._destroy_test_db(test_database_name, verbosity)
 
 
 if django.VERSION >= (1, 7):
