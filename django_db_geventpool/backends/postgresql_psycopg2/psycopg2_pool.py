@@ -7,7 +7,7 @@
 import logging
 logger = logging.getLogger('django')
 
-from gevent.queue import Queue
+from gevent import queue
 
 from psycopg2 import connect, DatabaseError
 
@@ -17,7 +17,7 @@ class DatabaseConnectionPool(object):
         if not isinstance(maxsize, (int, long)):
             raise TypeError('Expected integer, got %r' % (maxsize, ))
         self.maxsize = maxsize
-        self.pool = Queue()
+        self.pool = queue.Queue(maxsize=maxsize)
         self.size = 0
 
     def get(self):
@@ -43,7 +43,10 @@ class DatabaseConnectionPool(object):
             return new_item
 
     def put(self, item):
-        self.pool.put(item, timeout=2)
+        try:
+           self.pool.put(item, timeout=2)
+        except queue.Full:
+            item.close()
 
     def closeall(self):
         while not self.pool.empty():
