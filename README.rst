@@ -29,10 +29,11 @@ Settings
 ---------
 
 
-  * Set `ENGINE` in your database settings to: *'django_db_geventpool.backends.postgresql_psycopg2'*
-  * Or for postgis: *'django_db_geventpool.backends.postgis'*
-  * Add `MAX_CONNS` to `OPTIONS` to set the maximun number of connections allowed to database (default=4)
-  * If using django 1.6 or newer, add `CONN_MAX_AGE: 0` to settings to disable default django persistent connection feature. And read below note if you are manually spawning greenlets 
+  + Set *ENGINE* in your database settings to: 
+      + *'django_db_geventpool.backends.postgresql_psycopg2'*
+      + For postgis: *'django_db_geventpool.backends.postgis'*
+  + Add *MAX_CONNS* to *OPTIONS* to set the maximun number of connections allowed to database (default=4)
+  + If using django 1.6 or newer, add *'CONN_MAX_AGE': 0* to settings to disable default django persistent connection feature. And read below note if you are manually spawning greenlets 
 
 .. code:: python
 
@@ -72,9 +73,9 @@ Settings
 Using Django 1.6+ ORM when not serving requests
 ____________
 
-On If you are using django 1.6+ with the celery gevent pool, or have code that manually spawn greenlets it will not be sufficient to set CONN_MAX_AGE to 0.
-Django only checks for long-live connections when finishing a requests - So if you manually spawn a greenlet (or have celery spawning one) it's connections will
-not get cleaned up but live one for the server to timeout. In production this can cause quite some open connections and while developing it can hamper your tests cases.
+If you are using django 1.6+ with celery (or other), or have code that manually spawn greenlets it will not be sufficient to set CONN_MAX_AGE to 0.
+Django only checks for long-live connections when finishing a request - So if you manually spawn a greenlet (or have a task spawning one) its connections will
+not get cleaned up and will live until timeout. In production this can cause quite some open connections and while developing it can hamper your tests cases.
 
 To solve it make sure that each greenlet either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
 
@@ -112,4 +113,3 @@ Other pools
 
 * `django-db-pool <https://github.com/gmcguire/django-db-pool>`_
 * `django-postgresql <https://github.com/kennethreitz/django-postgrespool>`_
-
