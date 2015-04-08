@@ -7,15 +7,22 @@
 import logging
 logger = logging.getLogger('django')
 
-from gevent import queue
+try:
+    from gevent import queue
+except ImportError:
+    from eventlet import queue
 
 from psycopg2 import connect, DatabaseError
 
 
 class DatabaseConnectionPool(object):
     def __init__(self, maxsize=100):
-        if not isinstance(maxsize, (int, long)):
-            raise TypeError('Expected integer, got %r' % (maxsize, ))
+        try:
+            if not isinstance(maxsize, (int, long)):
+                raise TypeError('Expected integer, got %r' % (maxsize, ))
+        except Exception as ex:
+            if not isinstance(maxsize, (int,)):
+                raise TypeError('Expected integer, got %r' % (maxsize, ))
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=maxsize)
         self.size = 0
