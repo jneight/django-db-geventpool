@@ -13,7 +13,7 @@ django-db-geventpool
    :target: https://pypi.python.org/pypi/django-db-geventpool
    :alt: pypi license
 
-Another DB pool using gevent for PostgreSQL DB.
+Another DB pool using gevent for PostgreSQL DB. However my try to make it compatible with Python 3 and if `gevent` is not installed successfully with Python 3 then it will use `eventlet`.
 
 *Need Django 1.5.x or newer (check settings for django >= 1.6)*
 

@@ -6,11 +6,11 @@ from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation as 
 
 
 class DatabaseCreationMixin16(object):
-   def _create_test_db(self, verbosity, autoclobber):
+    def _create_test_db(self, verbosity, autoclobber):
         self.connection.closeall()
         return super(DatabaseCreationMixin16, self)._create_test_db(verbosity, autoclobber)
 
-   def _destroy_test_db(self, test_database_name, verbosity):
+    def _destroy_test_db(self, test_database_name, verbosity):
         self.connection.closeall()
         return super(DatabaseCreationMixin16, self)._destroy_test_db(test_database_name, verbosity)
 

@@ -4,7 +4,10 @@ import logging
 import sys
 
 import psycopg2.extensions
-from gevent.lock import Semaphore
+try:
+    from gevent.lock import Semaphore
+except ImportError:
+    from eventlet.semaphore import Semaphore
 
 try:
     from django.db.backends.postgresql_psycopg2.base import CursorWrapper
@@ -19,7 +22,10 @@ from django.conf import settings
 from django.db.backends.postgresql_psycopg2.base import utc_tzinfo_factory
 from django.utils.encoding import force_str
 
-import psycopg2_pool as psypool
+try:
+    import psycopg2_pool as psypool
+except ImportError:
+    import django_db_geventpool.backends.postgresql_psycopg2.psycopg2_pool as psypool
 from .creation import DatabaseCreation
 
 logger = logging.getLogger(__name__)
