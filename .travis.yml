@@ -5,10 +5,12 @@ env:
     - DJANGO_VERSION=1.5.10
     - DJANGO_VERSION=1.6.7
     - DJANGO_VERSION=1.7
+    - DJANGO_VERSION=1.8
 install:
     - pip install . --use-mirrors
     - pip install django==$DJANGO_VERSION
     - pip install psycopg2
+    - pip install gevent
     - python setup.py -q install
 script:
     - python runtests.py
