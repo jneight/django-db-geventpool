@@ -5,6 +5,7 @@
 # DB connection is closed and reopen it:
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
 import logging
+import sys
 logger = logging.getLogger('django')
 
 try:
@@ -15,14 +16,18 @@ except ImportError:
 from psycopg2 import connect, DatabaseError
 
 
+if sys.version_info[0] >= 3:
+    integer_types = int,
+else:
+    import __builtin__
+    integer_types = int, __builtin__.long
+
+
 class DatabaseConnectionPool(object):
     def __init__(self, maxsize=100):
-        try:
-            if not isinstance(maxsize, (int, long)):
-                raise TypeError('Expected integer, got %r' % (maxsize, ))
-        except Exception as ex:
-            if not isinstance(maxsize, (int,)):
-                raise TypeError('Expected integer, got %r' % (maxsize, ))
+        if not isinstance(maxsize, integer_types):
+            raise TypeError('Expected integer, got %r' % (maxsize,))
+
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=maxsize)
         self.size = 0
