@@ -8,7 +8,8 @@ from django.core.signals import request_finished
 def close_connection(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        result = f(*args, **kwargs)
-        request_finished.send(sender='greenlet')
-        return result
+        try:
+            return f(*args, **kwargs)
+        finally:
+            request_finished.send(sender='greenlet')
     return wrapper
