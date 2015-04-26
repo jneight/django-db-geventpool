@@ -39,9 +39,6 @@ else:
                 'PASSWORD': 'postgres',
                 'ATOMIC_REQUESTS': False,
                 'CONN_MAX_AGE': 0,
-                'OPTIONS': {
-                    'autocommit': True,
-                    },
             }
         },
         INSTALLED_APPS=(

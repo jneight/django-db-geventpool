@@ -13,9 +13,11 @@ django-db-geventpool
    :target: https://pypi.python.org/pypi/django-db-geventpool
    :alt: pypi license
 
-Another DB pool using gevent for PostgreSQL DB. However my try to make it compatible with Python 3 and if `gevent` is not installed successfully with Python 3 then it will use `eventlet`.
+Another DB pool using gevent for PostgreSQL DB.
 
 *Need Django 1.5.x or newer (check settings for django >= 1.6)*
+
+Python 3 is supported, but if `gevent` is not installed successfully it will use `eventlet`.
 
 
 Patch psycopg2
@@ -71,7 +73,6 @@ Settings
             'HOST': '',
             'PORT': '',
             'ATOMIC_REQUESTS': False,
-            'AUTOCOMMIT': True,
             'CONN_MAX_AGE': 0,
             'OPTIONS': {
                 'MAX_CONNS': 20
