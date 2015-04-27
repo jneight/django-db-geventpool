@@ -24,7 +24,7 @@ Patch psycopg2
 --------------
 
 Before using the pool, psycopg2 must be patched with psycogreen, if you are using `gunicorn webserver <http://www.gunicorn.org/>`_,
-a good place is the [`post_fork()`](http://docs.gunicorn.org/en/latest/settings.html#post-fork) function at the config file:
+a good place is the `post_fork() <http://docs.gunicorn.org/en/latest/settings.html#post-fork>`_ function at the config file:
 
 .. code:: python
 
