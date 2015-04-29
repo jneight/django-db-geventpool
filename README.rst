@@ -33,7 +33,7 @@ a good place is the `post_fork() <http://docs.gunicorn.org/en/latest/settings.ht
 
    def post_fork(server, worker):
        patch_psycopg()
-       worker.log_info("Made Psycopg2 Green")
+       worker.log.info("Made Psycopg2 Green")
 
 
 Settings
