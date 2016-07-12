@@ -28,7 +28,7 @@ except ImportError:
     import django_db_geventpool.backends.postgresql_psycopg2.psycopg2_pool as psypool
 from .creation import DatabaseCreation
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django.geventpool')
 
 connection_pools = {}
 connection_pools_lock = Semaphore(value=1)

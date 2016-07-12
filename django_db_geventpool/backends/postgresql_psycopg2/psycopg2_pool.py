@@ -6,7 +6,7 @@
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
 import logging
 import sys
-logger = logging.getLogger('django')
+logger = logging.getLogger('django.geventpool')
 
 try:
     from gevent import queue
