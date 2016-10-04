@@ -9,7 +9,6 @@ env:
     - DJANGO_VERSION=1.9
     - DJANGO_VERSION=1.10
 install:
-    - pip install . --use-mirrors
     - pip install django==$DJANGO_VERSION
     - pip install psycopg2
     - pip install gevent
