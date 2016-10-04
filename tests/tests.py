@@ -2,7 +2,10 @@
 
 import gevent
 
-from django.utils.unittest import TestCase
+try:
+    from django.utils.unittest import TestCase
+except ImportError:  # removed at 1.9
+    from unittest import TestCase
 
 from .models import TestModel
 
@@ -11,10 +14,10 @@ from django_db_geventpool.utils import close_connection
 
 @close_connection
 def test_multiple_connections(count):
-    print 'Test {0} starts'.format(count)
+    print('Test {0} starts'.format(count))
     for x in range(0, 20):
         assert len(TestModel.objects.all()) == 1
-    print 'Test {0} ends'.format(count)
+    print('Test {0} ends'.format(count))
 
 
 class ModelTest(TestCase):

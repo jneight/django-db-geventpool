@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-db-geventpool',
-    version='1.20.1',
+    version='1.21',
     install_requires=[
         'django>=1.5',
         'psycopg2>=2.5.1',
@@ -23,6 +23,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     author='Javier Cordero Martinez',
