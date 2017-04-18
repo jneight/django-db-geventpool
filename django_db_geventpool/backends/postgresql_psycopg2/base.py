@@ -157,6 +157,7 @@ class DatabaseWrapperMixin16(object):
     def get_new_connection(self, conn_params):
         if self.connection is None:
             self.connection = self.pool.get()
+            self.closed_in_transaction = False
         return self.connection
 
     def get_connection_params(self):
