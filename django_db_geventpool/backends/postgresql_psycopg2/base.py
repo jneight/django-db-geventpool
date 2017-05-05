@@ -155,18 +155,26 @@ class DatabaseWrapperMixin16(object):
         return self._pool
 
     def get_new_connection(self, conn_params):
+        if not hasattr(self, 'pool'):
+            return super(DatabaseWrapperMixin16, self).get_new_connection(conn_params)
+
         if self.connection is None:
             self.connection = self.pool.get()
             self.closed_in_transaction = False
         return self.connection
 
     def get_connection_params(self):
+        if not hasattr(self, 'pool'):
+            self.settings_dict.get('OPTIONS', {}).pop('MAX_CONNS', None)
         conn_params = super(DatabaseWrapperMixin16, self).get_connection_params()
         if 'MAX_CONNS' in self.settings_dict['OPTIONS']:
             conn_params['MAX_CONNS'] = self.settings_dict['OPTIONS']['MAX_CONNS']
         return conn_params
 
     def close(self):
+        if not hasattr(self, 'pool'):
+            return super(DatabaseWrapperMixin16, self).close()
+
         self.validate_thread_sharing()
         if self.closed_in_transaction or self.connection is None:
             return  # no need to close anything
