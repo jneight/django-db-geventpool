@@ -7,7 +7,8 @@ setup(
     version='1.21',
     install_requires=[
         'django>=1.5',
-        'psycopg2>=2.5.1',
+        'psycopg2>=2.5.1;platform_python_implementation != "PyPy"',
+        'psycopg2cffi>=2.7;platform_python_implementation == "PyPy"',
         'psycogreen>=1.0'],
     url='https://github.com/jneight/django-db-geventpool',
     description='Add a DB connection pool using gevent to django',

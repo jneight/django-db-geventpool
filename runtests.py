@@ -3,6 +3,12 @@ import sys
 import gevent.monkey
 gevent.monkey.patch_all()
 
+try:
+    from psycopg2cffi import compat
+    compat.register()
+except ImportError:
+    pass
+
 import psycogreen.gevent
 psycogreen.gevent.patch_psycopg()
 
