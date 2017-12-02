@@ -12,10 +12,16 @@ python:
 env:
     - DJANGO_VERSION=1.8.18
     - DJANGO_VERSION=1.11.8
+    - DJANGO_VERSION=2.0
 matrix:
     allow_failures:  # allow failures for non-released versions
         - python: '3.7-dev'
         - python: 'nightly'
+    exclude:  # Django 2 does not support Python 2.x
+        - python: '2.7'
+          env: DJANGO_VERSION=2.0
+        - python: 'pypy'
+          env: DJANGO_VERSION=2.0
 install:
     - pip install django==$DJANGO_VERSION
     - pip install gevent
