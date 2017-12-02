@@ -12,6 +12,10 @@ python:
 env:
     - DJANGO_VERSION=1.8.18
     - DJANGO_VERSION=1.11.8
+matrix:
+    allow_failures:  # allow failures for non-released versions
+        - python: '3.7-dev'
+        - python: 'nightly'
 install:
     - pip install django==$DJANGO_VERSION
     - pip install gevent
