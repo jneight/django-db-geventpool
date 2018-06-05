@@ -13,8 +13,11 @@ try:
 except ImportError:
     from eventlet import queue
 
-from psycopg2 import connect, DatabaseError
-
+try:
+    from psycopg2 import connect, DatabaseError
+except ImportError as e:
+    from django.core.exceptions import ImproperlyConfigured
+    raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
 if sys.version_info[0] >= 3:
     integer_types = int,

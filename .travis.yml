@@ -23,8 +23,10 @@ matrix:
         - python: 'pypy'
           env: DJANGO_VERSION=2.0
 install:
-    - pip install django==$DJANGO_VERSION
-    - pip install gevent
+    - travis_retry pip install django==$DJANGO_VERSION
+    - travis_retry pip install gevent
+    - if [[ $TRAVIS_PYTHON_VERSION == 'pypy'* ]]; then travis_retry pip install psycopg2cffi>=2.7; fi
+    - if [[ $TRAVIS_PYTHON_VERSION != 'pypy'* ]]; then travis_retry pip install psycopg2-binary; fi
     - python setup.py -q install
 script:
     - python runtests.py

@@ -19,6 +19,14 @@ Another DB pool using gevent for PostgreSQL DB.
 
 Python 3 is supported, but if `gevent` is not installed successfully it will use `eventlet`.
 
+psycopg2
+--------
+
+django-db-geventpool requires psycopg2:
+
+* ``psycopg2>=2.5.1`` for CPython 2 and 3 (or `psycopg2-binary <https://pypi.org/project/psycopg2-binary/>`_—see `notes in the psycopg2 2.7.4 release <http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/>`_)
+* ``psycopg2cffi>=2.7`` for PyPy
+
 
 Patch psycopg2
 --------------
