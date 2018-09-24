@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-db-geventpool',
-    version='2',
+    version='3.0.0',
     install_requires=[
         'django>=1.5',
         'psycogreen>=1.0',
