@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+- Fix setup.py UnicodeDecodeError when installing with python 3.6
+
 ## 3.0.0
 
 - psycopg2 is not installed by default, @mattbriancon
