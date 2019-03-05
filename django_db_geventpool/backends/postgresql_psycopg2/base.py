@@ -194,6 +194,9 @@ class DatabaseWrapperMixin16(object):
         if self.connection.closed:
             self.pool.closeall()
         else:
+            if self.connection.get_transaction_status() == psycopg2.extensions.TRANSACTION_STATUS_INTRANS:
+                self.connection.rollback()
+                self.connection.autocommit = True
             with self.wrap_database_errors:
                 self.pool.put(self.connection)
         self.connection = None

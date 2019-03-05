@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0
+
+- Correct connection cleanup after disabling autocommit with `transaction.setautocommit(False)`
+
 ## 3.0.1
 
 - Fix setup.py UnicodeDecodeError when installing with python 3.6
