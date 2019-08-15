@@ -21,6 +21,7 @@ def test_multiple_connections(count):
 
 
 class ModelTest(TestCase):
+    databases = {'default'}
     def test_model_save(self):
 
         data = 'testing save'
