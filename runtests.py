@@ -64,8 +64,8 @@ try:
 except ImportError:  # DiscoverRunner is the preferred one for django > 1.7
     from django.test.simple import DjangoTestSuiteRunner as TestSuiteRunner
 
-test_runner = TestSuiteRunner(verbosity=1)
+test_runner = TestSuiteRunner(verbosity=2)
 
-failures = test_runner.run_tests(['tests', ])
+failures = test_runner.run_tests(['tests'])
 if failures:
     sys.exit(failures)
