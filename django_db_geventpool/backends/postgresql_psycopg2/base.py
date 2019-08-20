@@ -14,14 +14,9 @@ try:
 except ImportError:
     from eventlet.semaphore import Semaphore
 
-from django.db.backends.postgresql_psycopg2.base import \
-    DatabaseWrapper as OriginalDatabaseWrapper
+from django.db.backends.postgresql.base import DatabaseWrapper as OriginalDatabaseWrapper
 
-try:
-    import psycopg2_pool as psypool
-except ImportError:
-    import django_db_geventpool.backends.postgresql_psycopg2.psycopg2_pool as psypool
-from .creation import DatabaseCreation
+from . import creation, psycopg2_pool
 
 logger = logging.getLogger('django.geventpool')
 
@@ -33,15 +28,15 @@ class DatabaseWrapperMixin(object):
     def __init__(self, *args, **kwargs):
         self._pool = None
         super(DatabaseWrapperMixin, self).__init__(*args, **kwargs)
-        self.creation = DatabaseCreation(self)
+        self.creation = creation.DatabaseCreation(self)
 
     @property
     def pool(self):
         if self._pool is not None:
             return self._pool
         connection_pools_lock.acquire()
-        if not self.alias in connection_pools:
-            self._pool = psypool.PostgresConnectionPool(
+        if self.alias not in connection_pools:
+            self._pool = psycopg2_pool.PostgresConnectionPool(
                 **self.get_connection_params())
             connection_pools[self.alias] = self._pool
         else:
