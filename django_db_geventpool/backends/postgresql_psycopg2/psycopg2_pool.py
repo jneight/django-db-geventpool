@@ -33,29 +33,21 @@ class DatabaseConnectionPool(object):
 
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=maxsize)
-        self.size = 0
 
     def get(self):
-        pool = self.pool
-        if self.size >= self.maxsize or pool.qsize():
-            new_item = pool.get()
+        try:
+            conn = self.pool.get_nowait()
             try:
                 # check connection is still valid
-                self.check_usable(new_item)
+                self.check_usable(conn)
                 logger.debug("DB connection reused")
             except DatabaseError:
                 logger.debug("DB connection was closed, creating new one")
-                new_item = self.create_connection()
-            return new_item
-        else:
-            self.size += 1
-            try:
-                new_item = self.create_connection()
-                logger.debug("DB connection created")
-            except:
-                self.size -= 1
-                raise
-            return new_item
+                conn = self.create_connection()
+        except queue.Empty:
+            conn = self.create_connection()
+            logger.debug("DB connection created")
+        return conn
 
     def put(self, item):
         try:
@@ -65,11 +57,14 @@ class DatabaseConnectionPool(object):
 
     def closeall(self):
         while not self.pool.empty():
-            conn = self.pool.get_nowait()
+            try:
+                conn = self.pool.get_nowait()
+            except queue.Empty:
+                continue
             try:
                 conn.close()
             except Exception:
-                pass
+                continue
         self.size = 0
 
 
