@@ -52,6 +52,7 @@ class DatabaseConnectionPool(object):
     def put(self, item):
         try:
             self.pool.put(item, timeout=2)
+            logger.debug("DB connection returned")
         except queue.Full:
             item.close()
 
@@ -66,6 +67,7 @@ class DatabaseConnectionPool(object):
             except Exception:
                 continue
         self.size = 0
+        logger.debug("DB connections all closed")
 
 
 class PostgresConnectionPool(DatabaseConnectionPool):
