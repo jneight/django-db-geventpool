@@ -75,6 +75,10 @@ class DatabaseWrapperMixin(object):
         finally:
             self.set_clean()
 
+    def close_if_unusable_or_obsolete(self):
+        # Always close the connection because it's not (usually) really being closed.
+        self.close()
+
     def _close(self):
         if self.connection.closed:
             self.pool.closeall()
