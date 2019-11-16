@@ -89,7 +89,7 @@ Settings
     }
 
 Using Django 1.6+ ORM when not serving requests
-____________
+-----------------------------------------------
 
 If you are using django 1.6+ with celery (or other), or have code that manually spawn greenlets it will not be sufficient to set CONN_MAX_AGE to 0.
 Django only checks for long-live connections when finishing a request - So if you manually spawn a greenlet (or have a task spawning one) its connections will
