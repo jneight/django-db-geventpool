@@ -4,6 +4,7 @@
 
 - Removed support for django < 1.11
 - Updated previous deprecation warnings
+- Improved queue and connection handling, @coderanger
 
 ## 3.1.0
 
