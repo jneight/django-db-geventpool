@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.0
+
+- Removed support for django < 1.11
+- Updated previous deprecation warnings
+- Improved queue and connection handling, @coderanger
+
 ## 3.1.0
 
 - Correct connection cleanup after disabling autocommit with `transaction.setautocommit(False)`

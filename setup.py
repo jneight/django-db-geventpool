@@ -3,6 +3,7 @@ import codecs
 
 from setuptools import setup, find_packages
 
+
 def long_description():
     try:
         with codecs.open('README.rst', 'r', 'utf-8') as f:
@@ -10,9 +11,10 @@ def long_description():
     except:
         return 'Error loading README.rst'
 
+
 setup(
     name='django-db-geventpool',
-    version='3.1.0',
+    version='3.2.0',
     install_requires=[
         'django>=1.11',
         'psycogreen>=1.0',
@@ -27,7 +29,6 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.11',
-        'Framework :: Django :: 2.1',
         'Framework :: Django :: 2.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
@@ -38,5 +39,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     author='Javier Cordero Martinez',
-    author_email='jcorderomartinez@gmail.com'
+    author_email='j@jcmz.me'
 )
