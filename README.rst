@@ -15,9 +15,7 @@ django-db-geventpool
 
 Another DB pool using gevent for PostgreSQL DB.
 
-*Need Django 1.5.x or newer (check settings for django >= 1.6)*
-
-Python 3 is supported, but if `gevent` is not installed successfully it will use `eventlet`.
+Python 3 is supported, but if `gevent` is not installed successfully it will use fallback to `eventlet`.
 
 psycopg2
 --------
@@ -47,31 +45,14 @@ a good place is the `post_fork() <http://docs.gunicorn.org/en/latest/settings.ht
 Settings
 ---------
 
-
   + Set *ENGINE* in your database settings to: 
       + *'django_db_geventpool.backends.postgresql_psycopg2'*
       + For postgis: *'django_db_geventpool.backends.postgis'*
   + Add *MAX_CONNS* to *OPTIONS* to set the maximun number of connections allowed to database (default=4)
-  + If using django 1.6 or newer, add *'CONN_MAX_AGE': 0* to settings to disable default django persistent connection feature. And read below note if you are manually spawning greenlets 
+  + Add *'CONN_MAX_AGE': 0* to settings to disable default django persistent connection feature. And read below note if you are manually spawning greenlets 
 
 .. code:: python
 
-    # for django 1.5.x
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django_db_geventpool.backends.postgresql_psycopg2',
-            'NAME': 'db',           # Or path to database file if using sqlite3.
-            'USER': 'postgres',                      # Not used with sqlite3.
-            'PASSWORD': 'postgres',                  # Not used with sqlite3.
-            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-            'OPTIONS': {
-                'MAX_CONNS': 20
-            }
-        }
-    }
-
-    # for django 1.6 and newer version, CONN_MAX_AGE must be set to 0, or connections will never go back to the pool
     DATABASES = {
         'default': {
             'ENGINE': 'django_db_geventpool.backends.postgresql_psycopg2',
@@ -88,23 +69,23 @@ Settings
         }
     }
 
-Using Django 1.6+ ORM when not serving requests
+Using ORM when not serving requests
 -----------------------------------------------
 
-If you are using django 1.6+ with celery (or other), or have code that manually spawn greenlets it will not be sufficient to set CONN_MAX_AGE to 0.
-Django only checks for long-live connections when finishing a request - So if you manually spawn a greenlet (or have a task spawning one) its connections will
+If you are using django with celery (or other), or have code that manually spawn greenlets it will not be sufficient to set CONN_MAX_AGE to 0.
+Django only checks for long-live connections when finishing a request - So if you manually spawn a greenlet (or task spawning one) its connections will
 not get cleaned up and will live until timeout. In production this can cause quite some open connections and while developing it can hamper your tests cases.
 
-To solve it make sure that each greenlet either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
+To solve it make sure that each greenlet (or task) either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
 
-The decorator method is preferred, but the other alternatives are also valid.
+The decorator method with your greenlet or task is preferred, but the other alternatives are also valid
 
 .. code:: python
 
    from django_db_geventpool.utils import close_connection
 
    @close_connection
-   def greenlet_worker()
+   def foo_worker()
         ...
 
 or 
@@ -112,7 +93,8 @@ or
 .. code:: python
 
    from django.core.signals import request_finished
-   def greenlet_worker():
+
+   def foo_worker():
       ...
       request_finished.send(sender="greenlet")
 
@@ -121,7 +103,8 @@ or
 .. code:: python
 
    from django.db import close_old_connections
-   def greenlet_worker():
+   
+   def foo_worker():
       ...
       close_old_connections()
 
