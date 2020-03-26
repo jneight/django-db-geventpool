@@ -76,16 +76,16 @@ If you are using django with celery (or other), or have code that manually spawn
 Django only checks for long-live connections when finishing a request - So if you manually spawn a greenlet (or task spawning one) its connections will
 not get cleaned up and will live until timeout. In production this can cause quite some open connections and while developing it can hamper your tests cases.
 
-To solve it make sure that each greenlet (or task) either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
+To solve it make sure that each greenlet function (or task) either sends the django.core.signals.request_finished signal or calls django.db.close_old_connections() right before it ends
 
-The decorator method with your greenlet or task is preferred, but the other alternatives are also valid
+The decorator method with your function is preferred, but the other alternatives are also valid
 
 .. code:: python
 
    from django_db_geventpool.utils import close_connection
 
    @close_connection
-   def foo_worker()
+   def foo_func()
         ...
 
 or 
@@ -94,7 +94,7 @@ or
 
    from django.core.signals import request_finished
 
-   def foo_worker():
+   def foo_func():
       ...
       request_finished.send(sender="greenlet")
 
@@ -104,7 +104,7 @@ or
 
    from django.db import close_old_connections
    
-   def foo_worker():
+   def foo_func():
       ...
       close_old_connections()
 
