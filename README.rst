@@ -49,6 +49,7 @@ Settings
       + *'django_db_geventpool.backends.postgresql_psycopg2'*
       + For postgis: *'django_db_geventpool.backends.postgis'*
   + Add *MAX_CONNS* to *OPTIONS* to set the maximun number of connections allowed to database (default=4)
+  + Add *'WAIT': True* to *OPTIONS* to wait for connections to be available, making sure no more than *CONN_MAX_AGE* connections to the database are created at the same time
   + Add *'CONN_MAX_AGE': 0* to settings to disable default django persistent connection feature. And read below note if you are manually spawning greenlets 
 
 .. code:: python
@@ -64,7 +65,8 @@ Settings
             'ATOMIC_REQUESTS': False,
             'CONN_MAX_AGE': 0,
             'OPTIONS': {
-                'MAX_CONNS': 20
+                'MAX_CONNS': 20,
+                'WAIT': False
             }
         }
     }
