@@ -34,6 +34,9 @@ class DatabaseConnectionPool(object):
         if not isinstance(reuse, integer_types):
             raise TypeError('Expected integer, got %r' % (reuse,))
 
+        # Use a WeakSet here so, even if we fail to discard the connection
+        # when it is being closed, or it is closed outside of here, the item
+        # will be removed automatically
         self._conns = weakref.WeakSet()
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=max(reuse, 1))
@@ -88,7 +91,7 @@ class DatabaseConnectionPool(object):
                 conn.close()
             except Exception:
                 continue
-            else:
+            finally:
                 self._conns.discard(conn)
 
         logger.debug("DB connections all closed")
