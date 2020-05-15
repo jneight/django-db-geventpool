@@ -26,8 +26,6 @@ else:
     import __builtin__
     integer_types = int, __builtin__.long
 
-_conns = weakref.WeakSet()
-
 
 class DatabaseConnectionPool(object):
     def __init__(self, maxsize=100, reuse=100):
@@ -36,12 +34,13 @@ class DatabaseConnectionPool(object):
         if not isinstance(reuse, integer_types):
             raise TypeError('Expected integer, got %r' % (reuse,))
 
+        self._conns = weakref.WeakSet()
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=max(reuse, 1))
 
     @property
     def size(self):
-        return len(_conns)
+        return len(self._conns)
 
     def get(self):
         try:
@@ -67,7 +66,7 @@ class DatabaseConnectionPool(object):
             except Exception:
                 raise
             else:
-                _conns.add(conn)
+                self._conns.add(conn)
 
         return conn
 
@@ -77,7 +76,7 @@ class DatabaseConnectionPool(object):
             logger.debug("DB connection returned to the pool")
         except queue.Full:
             item.close()
-            _conns.discard(item)
+            self._conns.discard(item)
 
     def closeall(self):
         while not self.pool.empty():
@@ -90,7 +89,7 @@ class DatabaseConnectionPool(object):
             except Exception:
                 continue
             else:
-                _conns.discard(conn)
+                self._conns.discard(conn)
 
         logger.debug("DB connections all closed")
 
