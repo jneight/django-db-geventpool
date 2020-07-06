@@ -6,6 +6,7 @@
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
 import logging
 import sys
+import weakref
 logger = logging.getLogger('django.geventpool')
 
 try:
@@ -27,34 +28,58 @@ else:
 
 
 class DatabaseConnectionPool(object):
-    def __init__(self, maxsize=100):
+    def __init__(self, maxsize=100, reuse=100):
         if not isinstance(maxsize, integer_types):
             raise TypeError('Expected integer, got %r' % (maxsize,))
+        if not isinstance(reuse, integer_types):
+            raise TypeError('Expected integer, got %r' % (reuse,))
 
+        # Use a WeakSet here so, even if we fail to discard the connection
+        # when it is being closed, or it is closed outside of here, the item
+        # will be removed automatically
+        self._conns = weakref.WeakSet()
         self.maxsize = maxsize
-        self.pool = queue.Queue(maxsize=maxsize)
+        self.pool = queue.Queue(maxsize=max(reuse, 1))
+
+    @property
+    def size(self):
+        return len(self._conns)
 
     def get(self):
         try:
-            conn = self.pool.get_nowait()
+            if self.size >= self.maxsize or self.pool.qsize():
+                conn = self.pool.get()
+            else:
+                conn = self.pool.get_nowait()
+
             try:
                 # check connection is still valid
                 self.check_usable(conn)
                 logger.debug("DB connection reused")
             except DatabaseError:
-                logger.debug("DB connection was closed, creating new one")
-                conn = self.create_connection()
+                logger.debug("DB connection was closed, creating a new one")
+                conn = None
         except queue.Empty:
-            conn = self.create_connection()
-            logger.debug("DB connection created")
+            conn = None
+            logger.debug("DB connection queue empty, creating a new one")
+
+        if conn is None:
+            try:
+                conn = self.create_connection()
+            except Exception:
+                raise
+            else:
+                self._conns.add(conn)
+
         return conn
 
     def put(self, item):
         try:
-            self.pool.put(item, timeout=2)
-            logger.debug("DB connection returned")
+            self.pool.put_nowait(item)
+            logger.debug("DB connection returned to the pool")
         except queue.Full:
             item.close()
+            self._conns.discard(item)
 
     def closeall(self):
         while not self.pool.empty():
@@ -66,7 +91,9 @@ class DatabaseConnectionPool(object):
                 conn.close()
             except Exception:
                 continue
-        self.size = 0
+            finally:
+                self._conns.discard(conn)
+
         logger.debug("DB connections all closed")
 
 
@@ -75,10 +102,10 @@ class PostgresConnectionPool(DatabaseConnectionPool):
         self.connect = kwargs.pop('connect', connect)
         self.connection = None
         maxsize = kwargs.pop('MAX_CONNS', 4)
+        reuse = kwargs.pop('REUSE_CONNS', maxsize)
         self.args = args
         self.kwargs = kwargs
-        DatabaseConnectionPool.__init__(
-            self, maxsize)
+        super(PostgresConnectionPool, self).__init__(maxsize, reuse)
 
     def create_connection(self):
         conn = self.connect(*self.args, **self.kwargs)
@@ -88,4 +115,3 @@ class PostgresConnectionPool(DatabaseConnectionPool):
 
     def check_usable(self, connection):
         connection.cursor().execute('SELECT 1')
-

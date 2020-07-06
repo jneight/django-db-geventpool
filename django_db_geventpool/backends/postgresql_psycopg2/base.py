@@ -52,8 +52,9 @@ class DatabaseWrapperMixin(object):
 
     def get_connection_params(self):
         conn_params = super(DatabaseWrapperMixin, self).get_connection_params()
-        if 'MAX_CONNS' in self.settings_dict['OPTIONS']:
-            conn_params['MAX_CONNS'] = self.settings_dict['OPTIONS']['MAX_CONNS']
+        for attr in ['MAX_CONNS', 'REUSE_CONNS']:
+            if attr in self.settings_dict['OPTIONS']:
+                conn_params[attr] = self.settings_dict['OPTIONS'][attr]
         return conn_params
 
     def close(self):
