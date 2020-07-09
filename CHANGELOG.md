@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.2
+
+- Add "wait" option to prevent more than MAX_CONNS being created at the same time, @bellini666
+
 ## 3.2.0
 
 - Removed support for django < 1.11
