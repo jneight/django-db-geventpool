@@ -5,6 +5,7 @@ import sys
 
 try:
     import psycopg2.extensions
+    import psycopg2.extras
 except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
@@ -47,6 +48,8 @@ class DatabaseWrapperMixin(object):
     def get_new_connection(self, conn_params):
         if self.connection is None:
             self.connection = self.pool.get()
+            # Fixes TypeError for models with JSONField introduced in Django 3.1.1
+            psycopg2.extras.register_default_jsonb(conn_or_curs=self.connection, loads=lambda x: x)
             self.closed_in_transaction = False
         return self.connection
 
