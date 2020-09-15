@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.3
+
+- Fixed TypeError when using JSONField with Django 3.1, @bvallant
+
 ## 3.2.2
 
 - Add "wait" option to prevent more than MAX_CONNS being created at the same time, @bellini666
