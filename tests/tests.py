@@ -23,15 +23,18 @@ def test_multiple_connections(count):
 class ModelTest(TestCase):
     databases = {'default'}
     def test_model_save(self):
+        data = {
+            'charfield': 'testing save',
+            'jsonfield': {'test': 'value'},
+        }
+        pk = TestModel.objects.create(**data).pk
 
-        data = 'testing save'
-        obj = TestModel.objects.create(data=data)
-
-        obj2 = TestModel.objects.get(pk=obj.pk)
-        self.assertEqual(obj.data, obj2.data)
+        obj = TestModel.objects.get(pk=pk)
+        for key in data.keys():
+            self.assertEqual(data[key], getattr(obj, key))
 
     def test_connections(self):
-        TestModel.objects.create(data='test')
+        TestModel.objects.create()
         greenlets = []
 
         for x in range(0, 50):
