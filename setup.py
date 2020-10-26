@@ -14,9 +14,9 @@ def long_description():
 
 setup(
     name='django-db-geventpool',
-    version='3.2.3',
+    version='4.0',
     install_requires=[
-        'django>=1.11',
+        'django>=3.1',
         'psycogreen>=1.0',
     ],
     url='https://github.com/jneight/django-db-geventpool',
@@ -29,13 +29,11 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',
-        'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
