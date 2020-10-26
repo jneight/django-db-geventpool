@@ -16,7 +16,6 @@ except ImportError:
 
 try:
     from psycopg2 import connect, DatabaseError
-    import psycopg2.extras
 except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
@@ -112,7 +111,6 @@ class PostgresConnectionPool(DatabaseConnectionPool):
         conn = self.connect(*self.args, **self.kwargs)
         # set correct encoding
         conn.set_client_encoding('UTF8')
-        psycopg2.extras.register_default_jsonb(conn_or_curs=conn, loads=lambda x: x)
         return conn
 
     def check_usable(self, connection):
