@@ -30,11 +30,6 @@ matrix:
     - {env: DJANGO=3.0, python: 'nightly'}
     - {env: DJANGO=3.0, python: 'pypy3'}
 
-    - {env: DJANGO=master, python: '3.6'}
-    - {env: DJANGO=master, python: '3.7'}
-    - {env: DJANGO=master, python: '3.8'}
-    - {env: DJANGO=master, python: 'nightly'}
-
   allow_failures:
     - python: 'nightly'
     - env: DJANGO=master
