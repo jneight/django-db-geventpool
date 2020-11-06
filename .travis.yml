@@ -10,25 +10,11 @@ services:
 matrix:
   include:
     # https://docs.djangoproject.com/en/dev/faq/install/#what-python-version-can-i-use-with-django
-    - {env: DJANGO=1.11, python: '2.7'}
-    - {env: DJANGO=1.11, python: '3.5'}
-    - {env: DJANGO=1.11, python: '3.6'}
-    - {env: DJANGO=1.11, python: '3.7'}
-    - {env: DJANGO=1.11, python: '3.8'}
-    - {env: DJANGO=1.11, python: 'pypy3'}
-
-    - {env: DJANGO=2.2, python: '3.5'}
-    - {env: DJANGO=2.2, python: '3.6'}
-    - {env: DJANGO=2.2, python: '3.7'}
-    - {env: DJANGO=2.2, python: '3.8'}
-    - {env: DJANGO=2.2, python: 'nightly'}
-    - {env: DJANGO=2.2, python: 'pypy3'}
-
-    - {env: DJANGO=3.0, python: '3.6'}
-    - {env: DJANGO=3.0, python: '3.7'}
-    - {env: DJANGO=3.0, python: '3.8'}
-    - {env: DJANGO=3.0, python: 'nightly'}
-    - {env: DJANGO=3.0, python: 'pypy3'}
+    - {env: DJANGO=3.1.2, python: '3.6'}
+    - {env: DJANGO=3.1.2, python: '3.7'}
+    - {env: DJANGO=3.1.2, python: '3.8'}
+    - {env: DJANGO=3.1.2, python: 'nightly'}
+    - {env: DJANGO=3.1.2, python: 'pypy3'}
 
     - {env: DJANGO=master, python: '3.6'}
     - {env: DJANGO=master, python: '3.7'}
