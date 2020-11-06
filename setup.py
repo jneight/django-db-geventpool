@@ -14,7 +14,7 @@ def long_description():
 
 setup(
     name='django-db-geventpool',
-    version='4.0',
+    version='4.0.0',
     install_requires=[
         'django>=3.1',
         'psycogreen>=1.0',
