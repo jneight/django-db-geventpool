@@ -11,8 +11,13 @@ logger = logging.getLogger('django.geventpool')
 
 try:
     from gevent import queue
+    from gevent.lock import RLock
 except ImportError:
     from eventlet import queue
+    from ...utils import nullcontext
+
+    def RLock():
+        return nullcontext
 
 try:
     from psycopg2 import connect, DatabaseError
@@ -41,10 +46,12 @@ class DatabaseConnectionPool(object):
         self._conns = weakref.WeakSet()
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=max(reuse, 1))
+        self.lock = RLock()
 
     @property
     def size(self):
-        return len(self._conns)
+        with self.lock:
+            return len(self._conns)
 
     def get(self):
         try:
