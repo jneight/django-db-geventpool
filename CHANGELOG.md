@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.4
+
+- Changed JSONField to come from `django.db.models` instead of the removed (as of Django 4.0) `django.contrib.postgres.fields`, @veracrux
+
 ## 3.2.3
 
 - Fixed TypeError when using JSONField with Django 3.1, @bvallant
@@ -25,7 +29,6 @@
 ## 3.0.0
 
 - psycopg2 is not installed by default, @mattbriancon
-
 
 ## 2
 
