@@ -1,9 +1,13 @@
 # Changelog
 
-## 3.2.4
+## 4.0.1
 
 - Changed JSONField to come from `django.db.models` instead of the removed (as of Django 4.0) `django.contrib.postgres.fields`, @veracrux
 
+## 4.0.0
+
+- Support for django 4.0
+-
 ## 3.2.3
 
 - Fixed TypeError when using JSONField with Django 3.1, @bvallant
