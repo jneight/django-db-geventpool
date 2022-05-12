@@ -27,6 +27,7 @@ settings.configure(
             'PASSWORD': 'postgres',
             'ATOMIC_REQUESTS': False,
             'CONN_MAX_AGE': 0,
+            'HOST': 'localhost',
         }
     },
     INSTALLED_APPS=(
