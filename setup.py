@@ -6,10 +6,10 @@ from setuptools import setup, find_packages
 
 def long_description():
     try:
-        with codecs.open('README.rst', 'r', 'utf-8') as f:
+        with codecs.open('README.md', 'r', 'utf-8') as f:
             return f.read()
     except:
-        return 'Error loading README.rst'
+        return 'Error loading README.md'
 
 
 setup(
@@ -22,7 +22,7 @@ setup(
     url='https://github.com/jneight/django-db-geventpool',
     description='Add a DB connection pool using gevent to django',
     long_description=long_description(),
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     include_package_data=True,
     license='Apache 2.0',
