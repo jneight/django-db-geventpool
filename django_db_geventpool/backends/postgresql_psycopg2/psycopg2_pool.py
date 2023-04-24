@@ -55,7 +55,10 @@ class DatabaseConnectionPool(object):
 
     def get(self):
         try:
-            if self.size >= self.maxsize or self.pool.qsize():
+            size = self.size 
+            if size >= self.maxsize:
+                logger.error('%s out of %s database connections used', size, self.maxsize)
+            if size >= self.maxsize or self.pool.qsize():
                 conn = self.pool.get()
             else:
                 conn = self.pool.get_nowait()
