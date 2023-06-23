@@ -17,7 +17,7 @@ except ImportError:
     from ...utils import nullcontext
 
     def RLock():
-        return nullcontext
+        return nullcontext()
 
 try:
     from psycopg2 import connect, DatabaseError
