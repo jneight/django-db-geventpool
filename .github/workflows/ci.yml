@@ -16,29 +16,29 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            python-version: '3.6'
-            django-version: '3.2.13'
+            python-version: '3.8'
+            django-version: '3.2.23'
           - os: ubuntu-latest
-            python-version: '3.7'
-            django-version: '3.2.13'
+            python-version: '3.9'
+            django-version: '3.2.23'
+          - os: ubuntu-latest
+            python-version: '3.10'
+            django-version: '3.2.23'
           - os: ubuntu-latest
             python-version: '3.8'
-            django-version: '3.2.13'
+            django-version: '4.2.9'
           - os: ubuntu-latest
             python-version: '3.9'
-            django-version: '3.2.13'
+            django-version: '4.2.9'
           - os: ubuntu-latest
             python-version: '3.10'
-            django-version: '3.2.13'
+            django-version: '4.2.9'
           - os: ubuntu-latest
-            python-version: 'pypy3'
-            django-version: '3.2.13'
+            python-version: '3.11'
+            django-version: '4.2.9'
           - os: ubuntu-latest
-            python-version: '3.9'
-            django-version: '4.0.4'
-          - os: ubuntu-latest
-            python-version: '3.10'
-            django-version: '4.0.4'
+            python-version: '3.12'
+            django-version: '4.2.9'
     services:
       postgres:
         image: postgres
@@ -54,10 +54,10 @@ jobs:
           - 5432:5432
     steps:
       - name: 'Set up Python ${{ matrix.python-version }}'
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '${{ matrix.python-version }}'
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: pip install django==${{ matrix.django-version}}
       - run: pip install psycopg2
       - run: pip install gevent
