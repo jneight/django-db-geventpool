@@ -14,10 +14,7 @@ try:
     from gevent.lock import RLock
 except ImportError:
     from eventlet import queue
-    from ...utils import nullcontext
-
-    def RLock():
-        return nullcontext
+    from ...utils import NullContextRLock as RLock
 
 try:
     from psycopg2 import connect, DatabaseError
