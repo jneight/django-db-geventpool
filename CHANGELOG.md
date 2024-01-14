@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.2
+
+- Fixed eventlet rlock using as context manager, issue #73, @StuBz211
+
 ## 4.0.1
 
 - Changed JSONField to come from `django.db.models` instead of the removed (as of Django 4.0) `django.contrib.postgres.fields`, @veracrux
@@ -7,7 +11,7 @@
 ## 4.0.0
 
 - Support for django 4.0
--
+
 ## 3.2.3
 
 - Fixed TypeError when using JSONField with Django 3.1, @bvallant
