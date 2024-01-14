@@ -16,6 +16,12 @@ def close_connection(f):
     return wrapper
 
 
-@contextmanager
-def nullcontext(enter_result=None):
-    yield enter_result
+class NullContextRLock:
+    def __init__(self, enter_result=None):
+        self._enter_result = enter_result
+
+    def __enter__(self):
+        return self._enter_result
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return None
