@@ -1,7 +1,4 @@
-# coding=utf-8
-
 from functools import wraps
-from contextlib import contextmanager
 
 from django.core.signals import request_finished
 
@@ -12,7 +9,8 @@ def close_connection(f):
         try:
             return f(*args, **kwargs)
         finally:
-            request_finished.send(sender='greenlet')
+            request_finished.send(sender="greenlet")
+
     return wrapper
 
 

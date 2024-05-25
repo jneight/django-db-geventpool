@@ -1,4 +1,4 @@
-name: CI
+name: CI-psycopg3
 'on':
   push:
     branches:
@@ -15,15 +15,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            python-version: '3.8'
-            django-version: '3.2.23'
-          - os: ubuntu-latest
-            python-version: '3.9'
-            django-version: '3.2.23'
-          - os: ubuntu-latest
-            python-version: '3.10'
-            django-version: '3.2.23'
           - os: ubuntu-latest
             python-version: '3.8'
             django-version: '4.2.9'
@@ -59,7 +50,7 @@ jobs:
           python-version: '${{ matrix.python-version }}'
       - uses: actions/checkout@v4
       - run: pip install django==${{ matrix.django-version}}
-      - run: pip install psycopg2
+      - run: pip install psycopg[binary]
       - run: pip install gevent
       - run: python setup.py -q install
-      - run: python runtests.py
+      - run: python runtests_psycopg3.py

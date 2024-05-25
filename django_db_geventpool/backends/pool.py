@@ -1,13 +1,11 @@
-# coding=utf-8
-
 # this file is a modified version of the psycopg2 used at gevent examples
 # to be compatible with django, also checks if
 # DB connection is closed and reopen it:
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
 import logging
-import sys
 import weakref
-logger = logging.getLogger('django.geventpool')
+
+logger = logging.getLogger("django.geventpool")
 
 try:
     from gevent import queue
@@ -16,27 +14,11 @@ except ImportError:
     from eventlet import queue
     from ...utils import NullContextRLock as RLock
 
-try:
-    from psycopg2 import connect, DatabaseError
-    import psycopg2.extras
-except ImportError as e:
-    from django.core.exceptions import ImproperlyConfigured
-    raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
-if sys.version_info[0] >= 3:
-    integer_types = int,
-else:
-    import __builtin__
-    integer_types = int, __builtin__.long
+class DatabaseConnectionPool:
+    DBERROR = None
 
-
-class DatabaseConnectionPool(object):
-    def __init__(self, maxsize=100, reuse=100):
-        if not isinstance(maxsize, integer_types):
-            raise TypeError('Expected integer, got %r' % (maxsize,))
-        if not isinstance(reuse, integer_types):
-            raise TypeError('Expected integer, got %r' % (reuse,))
-
+    def __init__(self, maxsize: int = 100, reuse: int = 100):
         # Use a WeakSet here so, even if we fail to discard the connection
         # when it is being closed, or it is closed outside of here, the item
         # will be removed automatically
@@ -61,7 +43,7 @@ class DatabaseConnectionPool(object):
                 # check connection is still valid
                 self.check_usable(conn)
                 logger.debug("DB connection reused")
-            except DatabaseError:
+            except self.DBERROR:
                 logger.debug("DB connection was closed, creating a new one")
                 conn = None
         except queue.Empty:
@@ -100,24 +82,3 @@ class DatabaseConnectionPool(object):
                 self._conns.discard(conn)
 
         logger.debug("DB connections all closed")
-
-
-class PostgresConnectionPool(DatabaseConnectionPool):
-    def __init__(self, *args, **kwargs):
-        self.connect = kwargs.pop('connect', connect)
-        self.connection = None
-        maxsize = kwargs.pop('MAX_CONNS', 4)
-        reuse = kwargs.pop('REUSE_CONNS', maxsize)
-        self.args = args
-        self.kwargs = kwargs
-        super(PostgresConnectionPool, self).__init__(maxsize, reuse)
-
-    def create_connection(self):
-        conn = self.connect(*self.args, **self.kwargs)
-        # set correct encoding
-        conn.set_client_encoding('UTF8')
-        psycopg2.extras.register_default_jsonb(conn_or_curs=conn, loads=lambda x: x)
-        return conn
-
-    def check_usable(self, connection):
-        connection.cursor().execute('SELECT 1')
