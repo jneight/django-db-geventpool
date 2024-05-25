@@ -13,7 +13,7 @@ def long_description():
 
 setup(
     name="django-db-geventpool",
-    version="4.0.2",
+    version="4.0.3",
     install_requires=[
         "django>=3.1",
     ],

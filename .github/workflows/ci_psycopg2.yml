@@ -63,4 +63,4 @@ jobs:
       - run: pip install psycogreen
       - run: pip install gevent
       - run: python setup.py -q install
-      - run: python runtests.py
+      - run: python runtests_psycopg2.py

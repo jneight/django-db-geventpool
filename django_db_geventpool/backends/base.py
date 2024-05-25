@@ -76,7 +76,7 @@ class DatabaseWrapperMixin(object):
         if self.connection.closed:
             self.pool.closeall()
         else:
-            if self.connection.get_transaction_status() == self.INTRANS:
+            if self.connection.info.transaction_status == self.INTRANS:
                 self.connection.rollback()
                 self.connection.autocommit = True
             with self.wrap_database_errors:
