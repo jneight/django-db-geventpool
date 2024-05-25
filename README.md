@@ -9,12 +9,21 @@ django-db-geventpool
 
 Another DB pool using gevent for PostgreSQL DB.
 
-If **gevent** is not installed, the pool will use **eventlet** as fallback.
+
+psycopg3
+---------
+
+Django, since 4.2, supports psycopg3. One of the advantages is that gevent is supported without needing extra patches, just install the package
+
+```
+$ pip install psycopg[binary]
+```
+
 
 psycopg2
 --------
 
-django-db-geventpool requires psycopg2:
+If **gevent** is not installed, the pool will use **eventlet** as fallback.
 
 -   `psycopg2>=2.5.1` for CPython 2 and 3 (or
     [psycopg2-binary](https://pypi.org/project/psycopg2-binary/)---see
@@ -22,33 +31,32 @@ django-db-geventpool requires psycopg2:
     release](http://initd.org/psycopg/articles/2018/02/08/psycopg-274-released/))
 -   `psycopg2cffi>=2.7` for PyPy
 
-Patch psycopg2
---------------
+    Patch psycopg2
+    --------------
 
-Before using the pool, psycopg2 must be patched with psycogreen, if you
-are using [gunicorn webserver](http://www.gunicorn.org/), a good place
-is the
-[post\_fork()](http://docs.gunicorn.org/en/latest/settings.html#post-fork)
-function at the config file:
+    Before using the pool, psycopg2 must be patched with psycogreen, if you
+    are using [gunicorn webserver](http://www.gunicorn.org/), a good place
+    is the
+    [post\_fork()](http://docs.gunicorn.org/en/latest/settings.html#post-fork)
+    function at the config file:
 
-``` {.python}
-from psycogreen.gevent import patch_psycopg     # use this if you use gevent workers
-from psycogreen.eventlet import patch_psycopg   # use this if you use eventlet workers
+    ``` {.python}
+    from psycogreen.gevent import patch_psycopg     # use this if you use gevent workers
+    from psycogreen.eventlet import patch_psycopg   # use this if you use eventlet workers
 
-def post_fork(server, worker):
-    patch_psycopg()
-    worker.log.info("Made Psycopg2 Green")
-```
+    def post_fork(server, worker):
+        patch_psycopg()
+        worker.log.info("Made Psycopg2 Green")
+    ```
 
 Settings
 --------
 
-> -
+> - Set *ENGINE* in your database settings to:
 >
->     Set *ENGINE* in your database settings to:
->
->     :   -   *\'django\_db\_geventpool.backends.postgresql\_psycopg2\'*
->         -   For postgis: *\'django\_db\_geventpool.backends.postgis\'*
+>         - For psycopg3: 'django_db_geventpool.backends.postgresql_psycopg3'
+>         - For psycopg2: 'django_db_geventpool.backends.postgresql_psycopg2'
+>         - For postgis: 'django_db_geventpool.backends.postgis'
 >
 > -   Add *MAX\_CONNS* to *OPTIONS* to set the maximun number of
 >     connections allowed to database (default=4)
@@ -64,7 +72,7 @@ Settings
 ``` {.python}
 DATABASES = {
     'default': {
-        'ENGINE': 'django_db_geventpool.backends.postgresql_psycopg2',
+        'ENGINE': 'django_db_geventpool.backends.postgresql_psycopg',
         'NAME': 'db',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
