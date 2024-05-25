@@ -7,6 +7,7 @@ try:
     import psycopg2.extensions
 except ImportError as e:
     from django.core.exceptions import ImproperlyConfigured
+
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
 try:
@@ -14,11 +15,13 @@ try:
 except ImportError:
     from eventlet.semaphore import Semaphore
 
-from django.db.backends.postgresql.base import DatabaseWrapper as OriginalDatabaseWrapper
+from django.db.backends.postgresql.base import (
+    DatabaseWrapper as OriginalDatabaseWrapper,
+)
 
 from . import creation, psycopg2_pool
 
-logger = logging.getLogger('django.geventpool')
+logger = logging.getLogger("django.geventpool")
 
 connection_pools = {}
 connection_pools_lock = Semaphore(value=1)
@@ -39,8 +42,7 @@ class DatabaseWrapperMixin(object):
             return self._pool
         with connection_pools_lock:
             if self.alias not in connection_pools:
-                self._pool = self.pool_class(
-                    **self.get_connection_params())
+                self._pool = self.pool_class(**self.get_connection_params())
                 connection_pools[self.alias] = self._pool
             else:
                 self._pool = connection_pools[self.alias]
@@ -54,9 +56,9 @@ class DatabaseWrapperMixin(object):
 
     def get_connection_params(self):
         conn_params = super(DatabaseWrapperMixin, self).get_connection_params()
-        for attr in ['MAX_CONNS', 'REUSE_CONNS']:
-            if attr in self.settings_dict['OPTIONS']:
-                conn_params[attr] = self.settings_dict['OPTIONS'][attr]
+        for attr in ["MAX_CONNS", "REUSE_CONNS"]:
+            if attr in self.settings_dict["OPTIONS"]:
+                conn_params[attr] = self.settings_dict["OPTIONS"][attr]
         return conn_params
 
     def close(self):
@@ -72,8 +74,8 @@ class DatabaseWrapperMixin(object):
             # will occur at every request.
             self.connection = None
             logger.warning(
-                'psycopg2 error while closing the connection.',
-                exc_info=sys.exc_info())
+                "psycopg2 error while closing the connection.", exc_info=sys.exc_info()
+            )
             raise
         finally:
             self.set_clean()
