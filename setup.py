@@ -16,7 +16,6 @@ setup(
     version="4.0.2",
     install_requires=[
         "django>=3.1",
-        "psycogreen>=1.0",
     ],
     url="https://github.com/jneight/django-db-geventpool",
     description="Add a DB connection pool using gevent to django",
