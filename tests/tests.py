@@ -1,15 +1,9 @@
-# coding=utf-8
-
 import gevent
 
-try:
-    from django.utils.unittest import TestCase
-except ImportError:  # removed at 1.9
-    from unittest import TestCase
+from django.test import TestCase
+from django_db_geventpool.utils import close_connection
 
 from .models import TestModel
-
-from django_db_geventpool.utils import close_connection
 
 
 @close_connection

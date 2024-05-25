@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import logging
 import sys
 
@@ -8,6 +6,7 @@ try:
 except ImportError:
     from eventlet.semaphore import Semaphore
 
+from .creation import DatabaseCreation
 
 logger = logging.getLogger("django.geventpool")
 
@@ -17,12 +16,12 @@ connection_pools_lock = Semaphore(value=1)
 
 class DatabaseWrapperMixin(object):
     pool_class = None
-    creation_class = None
+    creation_class = DatabaseCreation
     INTRANS = None
 
     def __init__(self, *args, **kwargs):
         self._pool = None
-        super(DatabaseWrapperMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.creation = self.creation_class(self)
 
     @property
@@ -37,14 +36,14 @@ class DatabaseWrapperMixin(object):
                 self._pool = connection_pools[self.alias]
         return self._pool
 
-    def get_new_connection(self, conn_params):
+    def get_new_connection(self, conn_params: dict):
         if self.connection is None:
             self.connection = self.pool.get()
             self.closed_in_transaction = False
         return self.connection
 
-    def get_connection_params(self):
-        conn_params = super(DatabaseWrapperMixin, self).get_connection_params()
+    def get_connection_params(self) -> dict:
+        conn_params = super().get_connection_params()
         for attr in ["MAX_CONNS", "REUSE_CONNS"]:
             if attr in self.settings_dict["OPTIONS"]:
                 conn_params[attr] = self.settings_dict["OPTIONS"][attr]

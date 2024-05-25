@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from django.contrib.gis.db.backends.postgis.base import (
     DatabaseWrapper as OriginalDatabaseWrapper,
 )

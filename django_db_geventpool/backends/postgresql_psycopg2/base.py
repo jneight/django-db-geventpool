@@ -10,10 +10,9 @@ from django.db.backends.postgresql.base import (
 )
 
 from .. import base
-from . import creation, psycopg2_pool
+from . import psycopg2_pool
 
 
 class DatabaseWrapper(base.DatabaseWrapperMixin, OriginalDatabaseWrapper):
     pool_class = psycopg2_pool.PostgresConnectionPool
-    creation_class = creation.DatabaseCreation
     INTRANS = psycopg2.extensions.TRANSACTION_STATUS_INTRANS

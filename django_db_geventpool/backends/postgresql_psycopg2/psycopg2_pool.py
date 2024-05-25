@@ -1,11 +1,8 @@
-# coding=utf-8
-
 # this file is a modified version of the psycopg2 used at gevent examples
 # to be compatible with django, also checks if
 # DB connection is closed and reopen it:
 # https://github.com/surfly/gevent/blob/master/examples/psycopg2_pool.py
 import logging
-import sys
 import weakref
 
 logger = logging.getLogger("django.geventpool")
@@ -25,21 +22,9 @@ except ImportError as e:
 
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
-if sys.version_info[0] >= 3:
-    integer_types = (int,)
-else:
-    import __builtin__
-
-    integer_types = int, __builtin__.long
-
 
 class DatabaseConnectionPool(object):
-    def __init__(self, maxsize=100, reuse=100):
-        if not isinstance(maxsize, integer_types):
-            raise TypeError("Expected integer, got %r" % (maxsize,))
-        if not isinstance(reuse, integer_types):
-            raise TypeError("Expected integer, got %r" % (reuse,))
-
+    def __init__(self, maxsize: int = 100, reuse: int = 100):
         # Use a WeakSet here so, even if we fail to discard the connection
         # when it is being closed, or it is closed outside of here, the item
         # will be removed automatically
@@ -113,7 +98,7 @@ class PostgresConnectionPool(DatabaseConnectionPool):
         reuse = kwargs.pop("REUSE_CONNS", maxsize)
         self.args = args
         self.kwargs = kwargs
-        super(PostgresConnectionPool, self).__init__(maxsize, reuse)
+        super().__init__(maxsize, reuse)
 
     def create_connection(self):
         conn = self.connect(*self.args, **self.kwargs)
