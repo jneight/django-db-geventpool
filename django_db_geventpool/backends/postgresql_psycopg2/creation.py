@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from django.db.backends.postgresql.creation import (
     DatabaseCreation as OriginalDatabaseCreation,
 )
