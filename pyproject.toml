@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-db-geventpool"
+dynamic = ["version"]
+description = "Add a DB connection pool using gevent to django"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "Javier Cordero Martinez", email = "j@jcmz.me" },
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 3.1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+    "django>=3.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/jneight/django-db-geventpool"
+
+[tool.hatch.version]
+path = "django_db_geventpool/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/django_db_geventpool",
+]

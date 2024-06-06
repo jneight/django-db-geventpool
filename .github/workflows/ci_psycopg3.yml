@@ -52,5 +52,5 @@ jobs:
       - run: pip install django==${{ matrix.django-version}}
       - run: pip install psycopg[binary]
       - run: pip install gevent
-      - run: python setup.py -q install
+      - run: pip install .
       - run: python runtests_psycopg3.py

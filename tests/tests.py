@@ -10,7 +10,7 @@ from .models import TestModel
 def test_multiple_connections(count):
     print("Test {0} starts".format(count))
     for x in range(0, 20):
-        assert len(TestModel.objects.all()) == 1
+        assert not TestModel.objects.exists()
     print("Test {0} ends".format(count))
 
 
@@ -29,9 +29,8 @@ class ModelTest(TestCase):
             self.assertEqual(data[key], getattr(obj, key))
 
     def test_connections(self):
-        TestModel.objects.create()
         greenlets = []
 
         for x in range(0, 50):
             greenlets.append(gevent.spawn(test_multiple_connections, x))
-        gevent.joinall(greenlets)
+        gevent.joinall(greenlets, raise_error=True)
