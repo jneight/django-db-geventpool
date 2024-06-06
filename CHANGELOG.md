@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.4
+
+- Fix package
+
+## 4.0.3
+
+- Support for psycopg3
+
 ## 4.0.2
 
 - Fixed eventlet rlock using as context manager, issue #73, @StuBz211
