@@ -1,0 +1,58 @@
+name: CI-psycopg3-gis
+'on':
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    env:
+      POSTGRES_USER: postgres
+      PGPASSWORD: postgres
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python-version: '3.8'
+            django-version: '4.2.9'
+          - os: ubuntu-latest
+            python-version: '3.9'
+            django-version: '4.2.9'
+          - os: ubuntu-latest
+            python-version: '3.10'
+            django-version: '4.2.9'
+          - os: ubuntu-latest
+            python-version: '3.11'
+            django-version: '4.2.9'
+          - os: ubuntu-latest
+            python-version: '3.12'
+            django-version: '4.2.9'
+    services:
+      postgres:
+        image: postgis/postgis
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: 'Set up Python ${{ matrix.python-version }}'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install gdal-bin libgdal-dev
+      - run: pip install django==${{ matrix.django-version}}
+      - run: pip install psycopg[binary]
+      - run: pip install gevent
+      - run: pip install gdal==3.4.1
+      - run: pip install .
+      - run: python runtests_psycopg3_gis.py
