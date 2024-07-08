@@ -30,7 +30,7 @@ class DatabaseWrapperMixin(object):
             return self._pool
         with connection_pools_lock:
             if self.alias not in connection_pools:
-                self._pool = self.pool_class(**self.get_connection_params())
+                self._pool = self.pool_class(super(), **self.get_connection_params(), connect=lambda parent, **kw: parent.get_new_connection(conn_params=kw))
                 connection_pools[self.alias] = self._pool
             else:
                 self._pool = connection_pools[self.alias]
