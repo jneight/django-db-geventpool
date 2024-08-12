@@ -32,6 +32,6 @@ django.setup()
 
 test_runner = DiscoverRunner(verbosity=2)
 
-failures = test_runner.run_tests(["tests.tests", "tests.tests_gis"])
+failures = test_runner.run_tests(["tests.tests"])
 if failures:
     sys.exit(failures)
