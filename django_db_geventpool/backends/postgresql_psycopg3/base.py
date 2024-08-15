@@ -36,3 +36,6 @@ class PostgresConnectionPool(pool.DatabaseConnectionPool):
 class DatabaseWrapper(base.DatabaseWrapperMixin, OriginalDatabaseWrapper):
     pool_class = PostgresConnectionPool
     INTRANS = psycopg.pq.TransactionStatus.INTRANS
+
+
+

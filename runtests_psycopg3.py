@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import gevent.monkey
+from distutils.version import StrictVersion
 
 gevent.monkey.patch_all()
 
@@ -28,6 +29,10 @@ settings.configure(
     ),
     USE_TZ=True,
 )
+
+if StrictVersion(django.get_version()) >= StrictVersion('5.1.0'):
+    settings.DATABASES['default']["OPTIONS"] = {"pool": False}
+
 django.setup()
 
 test_runner = DiscoverRunner(verbosity=2)
