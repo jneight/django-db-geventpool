@@ -48,6 +48,9 @@ jobs:
           - os: ubuntu-latest
             python-version: '3.12'
             django-version: '5.1'
+          - os: ubuntu-latest
+            python-version: '3.13'
+            django-version: '5.1'
     services:
       postgres:
         image: postgres
