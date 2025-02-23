@@ -3,9 +3,8 @@ from django.db.backends.postgresql.creation import (
 )
 
 
-class DatabaseCreationMixin(object):
+class DatabaseCreationMixin:
     def _create_test_db(self, verbosity, autoclobber, keepdb=False):
-        self.connection.closeall()
         return super()._create_test_db(verbosity, autoclobber, keepdb)
 
     def _destroy_test_db(self, test_database_name, verbosity):

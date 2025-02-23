@@ -68,7 +68,7 @@ class DatabaseConnectionPool:
             item.close()
             self._conns.discard(item)
 
-    def closeall(self):
+    def close(self):
         while not self.pool.empty():
             try:
                 conn = self.pool.get_nowait()
@@ -82,3 +82,4 @@ class DatabaseConnectionPool:
                 self._conns.discard(conn)
 
         logger.debug("DB connections all closed")
+

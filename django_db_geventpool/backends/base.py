@@ -10,14 +10,15 @@ from .creation import DatabaseCreation
 
 logger = logging.getLogger("django.geventpool")
 
-connection_pools = {}
 connection_pools_lock = Semaphore(value=1)
 
 
-class DatabaseWrapperMixin(object):
+class DatabaseWrapperMixin:
     pool_class = None
     creation_class = DatabaseCreation
     INTRANS = None
+    _connection_pools = {}
+
 
     def __init__(self, *args, **kwargs):
         self._pool = None
@@ -29,11 +30,11 @@ class DatabaseWrapperMixin(object):
         if self._pool is not None:
             return self._pool
         with connection_pools_lock:
-            if self.alias not in connection_pools:
-                self._pool = self.pool_class(super(), **self.get_connection_params(), connect=lambda parent, **kw: parent.get_new_connection(conn_params=kw))
-                connection_pools[self.alias] = self._pool
+            if self.alias not in self._connection_pools:
+                self._pool = self.pool_class(**self.get_connection_params())
+                self._connection_pools[self.alias] = self._pool
             else:
-                self._pool = connection_pools[self.alias]
+                self._pool = self._connection_pools[self.alias]
         return self._pool
 
     def get_new_connection(self, conn_params: dict):
@@ -62,7 +63,7 @@ class DatabaseWrapperMixin(object):
             # will occur at every request.
             self.connection = None
             logger.warning(
-                "psycopg2 error while closing the connection.", exc_info=sys.exc_info()
+                "psycopg error while closing the connection.", exc_info=sys.exc_info()
             )
             raise
         finally:
@@ -74,7 +75,7 @@ class DatabaseWrapperMixin(object):
 
     def _close(self):
         if self.connection.closed:
-            self.pool.closeall()
+            self.pool.close()
         else:
             if self.connection.info.transaction_status == self.INTRANS:
                 self.connection.rollback()
@@ -84,8 +85,8 @@ class DatabaseWrapperMixin(object):
         self.connection = None
 
     def closeall(self):
-        for pool in connection_pools.values():
-            pool.closeall()
+        for pool in self._connection_pools.values():
+            pool.close()
 
     def set_clean(self):
         if self.in_atomic_block:

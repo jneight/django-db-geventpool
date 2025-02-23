@@ -25,7 +25,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
 dependencies = [
-    "django>=3.1",
+    "django>=4.2",
 ]
 
 [project.urls]
