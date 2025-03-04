@@ -105,8 +105,8 @@ DATABASES = {
         'CONN_MAX_AGE': 0,
         'OPTIONS': {
             'MAX_CONNS': 20,
-            'REUSE_CONNS': 10.
-            'pool': False,
+            'REUSE_CONNS': 10,
+            'pool': False
         }
     }
 }
